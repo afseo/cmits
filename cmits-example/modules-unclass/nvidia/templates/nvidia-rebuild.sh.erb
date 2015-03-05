@@ -1,0 +1,143 @@
+#!/bin/bash
+#
+# chkconfig: - 65 25 
+# description: nvidia-rebuild rebuilds the nVidia drivers when necessary. On
+#              hosts with no nVidia card, it safely does nothing.
+#
+# If $INSTALLER_DIR is on an NFS mount, NFS mounts must happen before this
+# script.
+
+. /etc/rc.d/init.d/functions
+
+INSTALLER_DIR=<%= installer_dir %>
+
+# This setting may be superseded if the host contains a legacy chipset; see
+# below
+driver_installer=latest-`uname -m`
+
+reconnoiter () {
+    eval $(facter -p \
+        has_nvidia_graphics_card \
+        has_nvidia_legacy_304_graphics_card \
+        has_nvidia_legacy_17314_graphics_card \
+        using_nouveau_driver \
+        nvidia_ko_exists \
+        nvidia_libGL_installed \
+        nvidia_glx_extension_installed \
+        kernelrelease \
+	| sed 's/'\''/'\''\'\'''\''/g; s/ => \(.*\)/='\''\1'\''/' )
+# replace          ' w. ' \  '   '   ; replace => stuff with ='stuff'
+#
+# This serves to (2) enclose every fact value in single quotes; and
+# (1) escape single quotes found in fact values. Single quotes in bash
+# are escaping-free: a backslash inside a single-quoted string means
+# just a backslash. So to have a single-quoted string with a single
+# quote inside it, you must end the single quoted string, put no
+# space, put a backslash-escaped single quote outside any quoting, put
+# no space, and start another single-quoted string. So for example if
+# we have the string a'b and we want to put it in single quotes, we
+# say 'a'\''b'. The reason to be so careful with single quotes is to
+# avoid shell command injection.
+}
+
+start () {
+    echo -n "NVIDIA proprietary driver: "
+    reconnoiter
+    if [ "$has_nvidia_graphics_card" = "true" ]; then
+        if [ "$using_nouveau_driver" = "true" ]; then
+            echo -n "Nouveau driver precludes"
+            failure "NVIDIA proprietary driver"
+        else
+            install=no
+            # reasons to reinstall are in ascending order of how fundamental
+            # they are; message is overwritten by more important reasons
+            if [ "$nvidia_glx_extension_installed" != "true" ]; then
+                install=yes
+                message="GLX extension looks wrong"
+            fi
+            if [ "$nvidia_libGL_installed" != "true" ]; then
+                install=yes
+                message="NVIDIA proprietary libGL not installed"
+            fi
+            if [ "$nvidia_ko_exists" != "true" ]; then
+                install=yes
+                message="nvidia.ko not found for kernel $kernel_release"
+            fi
+            if [ "$has_nvidia_legacy_304_graphics_card" = "true" ]; then
+                driver_installer=legacy-304-`uname -m`
+            fi
+            if [ "$has_nvidia_legacy_17314_graphics_card" = "true" ]; then
+                driver_installer=legacy-17314-`uname -m`
+            fi
+
+            if [ "$install" = "yes" ]; then
+                # this function does its own success/failure calls
+                reinstall_driver "$message"
+            else
+                echo -n "looks good"
+                success "NVIDIA proprietary driver"
+            fi
+        fi
+    else
+        echo -n "No card, or no facts known"
+        # It's not an intrinsic failure to not have an NVIDIA card installed
+        success "NVIDIA proprietary driver"
+    fi
+}
+
+reinstall_driver () {
+    message="$1"
+    qualified_driver_installer="$INSTALLER_DIR/$driver_installer"
+    if [ -f "$qualified_driver_installer" ]; then
+        echo -n "needs reinstall: $message"
+        cat <<EOF
+
+
+**************************************************************************
+
+$0: Reinstalling nVidia driver. This will take ~15 min.
+
+**************************************************************************
+EOF
+        if sh "$qualified_driver_installer" -Ns; then
+            echo "$0: Driver installer done. nvidia-xconfig, perhaps?" >&2
+            echo -n "NVIDIA proprietary driver: installed"
+            success "NVIDIA proprietary driver"
+        else
+            echo -n "NVIDIA proprietary driver: install failed"
+            failure "NVIDIA proprietary driver"
+        fi
+    else
+        echo "$0: Installer \"$qualified_driver_installer\" not found." >&2
+        failure "NVIDIA proprietary driver"
+        return 1
+    fi
+}
+
+# See how we were called.
+
+case "$1" in
+  start)
+	start
+	RETVAL=$?
+        ;;
+  stop)
+	RETVAL=0
+        ;;
+  status)
+	RETVAL=0
+	;;
+  restart|reload)
+	start
+	RETVAL=$?
+	;;
+  condrestart)
+	RETVAL=0
+	;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+        exit 1
+esac
+
+echo
+exit $RETVAL

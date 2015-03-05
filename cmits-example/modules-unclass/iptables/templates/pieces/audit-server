@@ -1,0 +1,3 @@
+<% site_subnets.each do |subnet| %>
+-A INPUT -s <%=subnet-%> -p tcp -m tcp --sport 48 --dport 48 -j ACCEPT
+<% end %>

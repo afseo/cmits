@@ -1,0 +1,216 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+
+\chapter{UNIX SRG Compliance}
+\label{UNIXSRGCompliance}
+
+This chapter has to do with the compliance of Linux machines controlled by
+this policy, and administrators performing the procedures written here,
+with the UNIX SRG \cite{unix-srg}.
+
+In the indices of this document you can find a UNIX SRG Compliance Index.
+All requirements directly and completely implemented by automated
+application of this policy are listed in that index as ``implemented.''
+The default Red Hat Enterprise Linux (RHEL) install satisfies some SRG
+requirements; a list of those is below. In places where the SRG imposes
+policy demands on the actions of administrators, those demands are passed
+on in \S\ref{Procedures}. All other requirements are discussed in another
+section below.
+
+Where RHEL defaults to the correct behavior, but it is simple to write
+automated policy that will fix anything that is broken, we do that, in an
+attempt to ensure that UNIX hosts are not only compliant at rollout, but
+remain compliant over time, and to ensure that noncompliance is rare
+enough to draw attention where it is warranted.
+
+
+
+
+
+
+\section{Requirements that RHEL implements by default}
+
+\bydefault{RHEL5}{rhel5stig}{GEN000000-LNX007580}
+\bydefault{RHEL5}{rhel5stig}{GEN000000-LNX007620} RHEL5 does not include LLC
+support.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN000440} RHEL logs all logon attempts by default.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN000900} RHEL assigns the root user a home directory
+of \verb!/root!, which is not \verb!/!.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001040} RHEL logs all root logon attempts by
+default.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001060} RHEL logs all su attempts by default.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001080} RHEL sets the root user's shell to
+\verb!/bin/sh! by default.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001220} \bydefault{RHEL5, RHEL6}{unixsrg}{GEN001240} RHEL ensures
+by default that all system files, programs and directories are owned and
+group-owned by system accounts, via its packaging system.
+
+\bydefault{RHEL5, RHEL6}{iacontrol}{DCSL-1}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001300} RHEL ensures by default that all system
+library files have permissions of \verb!0755! or more restrictive, via its
+packaging system.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001100} RHEL comes with OpenSSH in the default
+install, and telnet and rlogin/rsh not in the default install. A small
+policy that provides defense in depth is in \S\ref{class_stig_misc}.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001140} Neither RHEL5 nor RHEL6 as
+shipped contain files with more permissions for group or other than for
+user. But~\S\ref{class_stig_misc::find_uneven} checks for them anyway.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001160}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001170}
+System files under RHEL are always owned by a valid user, because packages
+that install those files add the corresponding user as necessary. By the
+same token, packages under RHEL add any groups necessary to own system
+files. But~\S\ref{class_stig_misc::find_unowned} checks for unowned files
+anyway.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001180}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001190}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001200}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001210}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001220}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001240}
+All system files, programs and directories under RHEL are owned and
+group-owned by system users, and do not have extended ACLs. None have
+write permission for any user but root, including executables relating to
+network services.
+
+With that said, see~\S\ref{class_stig_misc::permissions} for defense in depth.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001300} All library files under RHEL are
+mode \verb!0755! or less permissive by default.
+
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001660}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001680} RHEL packages do not install any
+non-root-owned system startup files.
+
+\bydefault{RHEL5, RHEL6}{iacontrol}{DCSL-1}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN001700} RHEL packages do not install programs not
+owned by a system account, so run control scripts cannot run such
+programs.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002240} We do not install any device files via
+policy or procedure, so all device files are in the vendor-designated
+directories as required.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002280} RHEL makes \verb!/dev! writable only by the
+owner, as required. As above, device files are only in \verb!/dev!.
+World-writable device files are \verb!/dev/random!, \verb!/dev/urandom!,
+\verb!ptmx!, \verb!/dev/null!, \verb!/dev/zero!, \verb!/dev/full!,
+\verb!/dev/fuse!, \verb!/dev/net/tun!, \verb!/dev/tty!; these are all
+world-writable by design. (Other STIG requirements have to do with
+tunnelling; see the Unix SRG index for more on how we deal with them.)
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002320}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002330}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002340}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002360}
+Under RHEL default settings, console devices such as the floppy drive and
+the microphone are managed by the pam\_console PAM module, which ensures
+that the user who is logged in at the console owns these devices and no
+one else can access them (mode \verb!0600!, no extended ACLs). This does
+not comply with the letter of the requirement but does address the
+vulnerability discussed therein.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002640} System accounts are disabled by
+default under RHEL.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN003540} Support for non-executable data
+has been activated by default since RHEL3.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN003580} All Linux kernels since 1996
+have improved TCP sequence number randomization, in material compliance
+with this requirement.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN003640}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN003650} For the root filesystem and all
+other local filesystems, RHEL5 and RHEL6 use the ext3 filesystem by
+default, which is a journalling filesystem.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN003660} RHEL logs all successful and
+unsuccessful logins by default.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005060} Neither RHEL5 nor RHEL6 provides
+an FSP server, nor do we deploy one.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005160} 
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005180}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005190}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005220}
+RHEL X servers write \verb!.Xauthority! files by default, with mode
+\verb!0600! and no extended ACLs, as required, and use them for access
+restriction.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005240}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN005260} RHEL X servers do not listen for
+network connections by default, so users cannot permit X display access to
+unauthorized hosts.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN006000} RHEL does not provide AOL
+Instant Messenger (AIM), MSN Messenger, or Yahoo! Messenger. It does
+provide the Pidgin instant messaging client, which is the means by which
+users connect to the DISA-sponsored Defense Connect Online (DCO) instant
+messaging service from RHEL. According to the discussion of this
+requirement, ``Clients used to access internal or DoD-controlled IM
+services are permitted.''
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN006040} RHEL does not provide any
+peer-to-peer file sharing applications.
+
+\bydefault{RHEL6}{unixsrg}{GEN006240} RHEL6 does not provide any Usenet news
+server software.
+
+\bydefault{RHEL5,RHEL6}{unixsrg}{GEN007960} Upon inspection of the source
+code of the \verb!ldd! command both under RHEL5 and RHEL6, it does not run
+the executable in question, but hands it as a parameter to the dynamic
+linker. This means that according to the vulnerability discussion, the
+\verb!ldd! command suitably ``protects against the execution of untrusted
+files.''
+
+\bydefault{RHEL5,RHEL6}{unixsrg}{GEN008420} RHEL has had the Exec Shield
+technology for address randomization since RHEL3 update 3. See
+\url{http://people.redhat.com/drepper/nonselsec.pdf} and
+\url{http://www.redhat.com/f/pdf/rhel/WHP0006US_Execshield.pdf}.
+
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002480}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002500}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002520}
+\bydefault{RHEL5, RHEL6}{unixsrg}{GEN002540}
+RHEL public directories are as follows. All public directories are owned
+by root, group root, and have the sticky bit set. No other world-writable
+directories exist on a stock RHEL system.
+\begin{itemize}
+\item \verb!/tmp!
+\item \verb!/tmp/.ICE-unix!
+\item \verb!/tmp/.X11-unix!
+\item \verb!/tmp/.font-unix!
+\item \verb!/var/tmp!
+\item \verb!/usr/src/debug/tmp!
+\end{itemize}
+
+When installed, VMware Workstation installs a public directory for
+drag-and-drop functionality, \verb!/tmp/VMwareDnD!. It also fulfills the
+SRG requirements.
+
+\input{org_unix_na}
+\input{org_unix_unmet}
+\input{org_unix_documented_with_iao}

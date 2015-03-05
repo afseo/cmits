@@ -1,0 +1,9 @@
+# Allow DHCP requests to go out, responses in
+-A INPUT -p udp -m udp --dport 68 -j ACCEPT 
+-A OUTPUT -p udp -m udp --dport 67 -j ACCEPT 
+
+# Drop responses being sent and requests being received: we are not a DHCP
+# server
+-A INPUT -p udp -m udp --dport 67 -j DROP
+-A OUTPUT -p udp -m udp --dport 68 -j DROP
+

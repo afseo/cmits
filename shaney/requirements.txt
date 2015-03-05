@@ -1,0 +1,63 @@
+This file documents what shaney is supposed to do. Most generally, that is to
+turn a bunch of files full of Puppet code, with comments written in LaTeX, and
+turn them into a single LaTeX document, with `verbatim` sections containing
+the Puppet code. At a closer look, there are more inputs than that, and more
+outputs.
+
+First, shaney's roots:
+
+cfdoc, as contributed to cfengine 2.x
+-------------------------------------
+
+Read in some input. Put out those lines of input which start with '#'
+just as they are in the input minus the '#'. Surround maximal
+consecutive sets of uncommented input lines with verbatim tags. cfdoc
+is found in the cfengine sources.
+
+cfdoc at AFSEO in 2008
+----------------------
+
+Understand a little syntax (such as can be divined from one input
+line). Make index entries for classes. The patches to make cfdoc do
+this live in <https://afseo.eglin.af.mil/svn/admin/trunk/rpm/SOURCES>.
+
+faxlore
+-------
+
+Do the same with Puppet syntax, instead of cfengine 2
+syntax. Rewritten in Python. Found at
+<https://afseo.eglin.af.mil/svn/admin/trunk/puppet/unified-policy-document/faxlore?p=4138>.
+
+shaney
+------
+
+Understand more syntax (spanning more than one input line) -- but based on
+indentation, not a full understanding of the Puppet language. Detect Puppet
+``include`` statements, and for each, insert a cross-reference to the section
+containing the included class.
+
+Integrate with iadoc LaTeX package (understand \implements and other like
+tags), and understand mappings between STIG PDIs and IA controls written in
+XCCDF files.
+
+Using that understanding, whenever compliance with a STIG PDI is notated,
+insert notation of compliance with the corresponding IA control.
+
+shaneyg
+-------
+
+Understand what a paragraph is. Make copies of paragraphs notating compliance
+with IA controls in per-IA-control summary output files.
+
+Make a table of all IA controls complied with or spoken about. This is called
+an `executive summary.'
+
+Trawl through LaTeX files in search of IA compliance tags, too, not just
+Puppet files. Avoid implementing a full LaTeX parser in the process.
+
+sourapples
+----------
+
+Integrate `shaney` and three other scripts together. Replace the Makefile that
+was used to build the unified policy document with a single Python executable,
+to improve the portability of the build process.

@@ -1,0 +1,14 @@
+module rsyslog_loghost 1.0.1;
+
+require {
+        type syslogd_t;
+        type port_t;
+        type random_device_t;
+        class capability ipc_lock;
+        class tcp_socket name_bind;
+        class chr_file read;
+}
+
+allow syslogd_t port_t:tcp_socket name_bind;
+allow syslogd_t self:capability ipc_lock;
+allow syslogd_t random_device_t:chr_file read;

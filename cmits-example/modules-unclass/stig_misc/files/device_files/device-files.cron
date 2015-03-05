@@ -1,0 +1,14 @@
+#!/bin/sh
+# Find extraneous device files on local filesystems.
+# /dev is its own filesystem, so any device file on a local disk-based
+# filesystem is extraneous.
+for fstype in ext4 ext3 ext2 xfs; do
+    # mount says things like this:
+    # "/dev/vda2 on / type ext3 (rw)"
+    # we want the /
+    for fs in $(mount -t $fstype | cut -d' ' -f3); do
+        # -xdev: do not cross into another mount.
+        find $fs -xdev -type b -o -type c -printf \
+            'EXTRANEOUS DEVICE FILE: %f\n'
+    done
+done

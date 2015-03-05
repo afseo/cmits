@@ -1,0 +1,3 @@
+-A OUTPUT -m tcp -p tcp --dport 464 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 88 -j ACCEPT
+-A OUTPUT -m udp -p udp --dport 88 -j ACCEPT

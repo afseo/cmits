@@ -1,0 +1,14 @@
+module sbu_apps 1.0.0;
+
+require {
+        type httpd_sys_script_t;
+        type devlog_t;
+        type syslogd_t;
+        class sock_file write;
+        class unix_dgram_socket sendto;
+}
+
+# Allow scripts that httpd runs to log errors.
+allow httpd_sys_script_t devlog_t:sock_file write;
+allow httpd_sys_script_t syslogd_t:unix_dgram_socket sendto;
+

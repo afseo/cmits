@@ -1,0 +1,6 @@
+# Serve ssh
+<% @site_subnets.each do |subnet| %>
+-A INPUT -s <%=subnet-%> -p tcp -m tcp --dport ssh -j ACCEPT
+<% end %>
+-A OUTPUT -p tcp -m tcp --sport ssh -j ACCEPT
+

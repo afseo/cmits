@@ -1,0 +1,5 @@
+# Rsyslog client. We connect using SSL to the loghost and forward log messages.
+# (Use this piece only on hosts which include log::rsyslog::client, which puts
+# an entry for loghost in /etc/hosts.)
+-A OUTPUT -p tcp -m tcp -d loghost --dport 10514 -j ACCEPT
+

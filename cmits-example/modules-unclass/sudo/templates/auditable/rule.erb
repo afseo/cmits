@@ -1,0 +1,5 @@
+<%=@user_spec%> ALL=(<%=@run_as%>) \
+    <%=@modifiers%>NOEXEC:        AUDITABLE_NOEXEC, \
+    <%=@modifiers%>EXEC:          AUDITABLE_EXEC,   \
+    <%=@modifiers%>SETENV:NOEXEC: AUDITABLE_SETENV_NOEXEC, \
+    <%=@modifiers%>SETENV:EXEC:   AUDITABLE_SETENV_EXEC

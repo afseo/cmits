@@ -1,0 +1,11 @@
+# Allow loopback ICMP.
+-A OUTPUT -p icmpv6 -m ipv6header --soft ! --header frag -d ::1 -j ACCEPT
+# Allow ICMP within the enclave.
+-A OUTPUT -p icmpv6 -m ipv6header --soft ! --header frag -d <%=site-%> -j ACCEPT
+# Allow link-local ICMP. This encompasses router advertisements, multicast
+# listener reports, neighbor discovery, etc.
+-A OUTPUT -p icmpv6 -m ipv6header --soft ! --header frag -d fe80::/10 -j ACCEPT
+# Interface-local multicast ICMP.
+-A OUTPUT -p icmpv6 -m ipv6header --soft ! --header frag -d ff01::/8 -j ACCEPT
+# Link-local multicast ICMP.
+-A OUTPUT -p icmpv6 -m ipv6header --soft ! --header frag -d ff02::/8 -j ACCEPT

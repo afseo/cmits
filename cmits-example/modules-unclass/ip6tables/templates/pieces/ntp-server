@@ -1,0 +1,1 @@
+-A INPUT -s <%=site-%> -p udp --dport 123 -j ACCEPT

@@ -1,0 +1,116 @@
+#!/bin/bash
+
+DOMAIN=eglin.hpc.mil
+
+# The interval used here must make sense to date(1).
+INTERVAL="48 hours"
+EXPECTING_DATABASE=/var/spool/sign_expected/db
+CHECK_EVERY_SECONDS=60
+
+usage () {
+	cat <<EOF >&2
+
+Usage: $0
+
+Sign Puppet certificates for hosts named in the SQLite 3 database
+$EXPECTING_DATABASE, when they submit certificate signing requests.
+
+To enter hosts in the expecting database, use the expect_host script.
+
+If a host listed in the database does not submit a CSR within $INTERVAL, it
+expires out of the database.
+
+EOF
+}
+
+sql () {
+	sqlite3 -noheader $EXPECTING_DATABASE "$@"
+}
+
+sql "CREATE TABLE IF NOT EXISTS
+        expecting_hosts
+        (entered integer, hostname text);"
+
+d=$(mktemp -d)
+
+check () {
+	puppet cert list --all > $d/all
+}
+
+exists () {
+	cat $d/all | grep "^  \"$1\"" >&/dev/null
+}
+
+signed () {
+	cat $d/all | grep "^+ \"$1\"" >&/dev/null
+}
+
+sign () {
+	puppet cert sign $1
+}
+remove () {
+	sql "DELETE FROM expecting_hosts
+		WHERE hostname = '$1';"
+}
+
+decanonicalize () {
+	echo "${1%.$DOMAIN}"
+}
+decanonicalize_many () {
+	for h; do
+		echo $(decanonicalize $h)
+	done
+}
+
+log () {
+	echo "$(date +%Y-%m-%dT%H:%M:%S): $@"
+}
+
+expire_hosts () {
+	expire_if_entered_before=$(date -d "now - $INTERVAL" +%s)
+	expire_hosts=$(sql "SELECT hostname
+                FROM expecting_hosts
+		WHERE entered < $expire_if_entered_before;")
+	for xh in $expire_hosts; do
+		log "$(decanonicalize $xh) expired; removing"
+	done
+	sql "DELETE FROM expecting_hosts
+		WHERE entered < $expire_if_entered_before;"
+}
+
+sign_hosts () {
+	for sh in $(sql "SELECT hostname
+			FROM expecting_hosts;"); do
+		if signed $sh; then
+			log "$(decanonicalize $sh) already signed; removing"
+			remove $sh
+		else
+			if exists $sh; then
+				log "$(decanonicalize $sh) being signed"
+				if sign $sh; then
+					log "$(decanonicalize $sh) signed; removing"
+					remove $sh
+				fi
+			fi
+		fi
+	done
+}
+
+if [ $# -gt 0 ]; then
+	usage
+	exit 1
+fi
+
+while true; do
+	check
+	expire_hosts
+	nexpected=$(sql "SELECT COUNT(*) FROM expecting_hosts")
+	if [ "$nexpected" -gt 0 ]; then
+		log "expecting these hosts: $(echo $(decanonicalize_many \
+$(sql "SELECT hostname FROM expecting_hosts ORDER BY hostname")))"
+	else
+		log "not expecting any hosts"
+	fi
+	sign_hosts
+	sleep $CHECK_EVERY_SECONDS
+done

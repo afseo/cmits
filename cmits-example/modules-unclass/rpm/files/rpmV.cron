@@ -1,0 +1,123 @@
+#!/bin/sh
+
+# These functions reject lines of output from rpm -Va, for various
+# reasons, in order to bring the unexpected changes to the forefront.
+
+# We've changed a bunch of config files using this very policy.
+reject_config_files () {
+    grep -v '^[^[:space:]]\+  c '
+}
+
+# A couple of them are deleted by this policy.
+reject_missing_config_file_namely () {
+    grep -v '^missing   c '"$1"
+}
+
+# Some symlinks are changed.
+reject_changed_symlink_namely () {
+    grep -v '^\.\.\.\.L\.\.\.\.    '"$1"
+}
+
+reject_missing_file_namely () {
+    grep -v 'missing     '"$1"
+}
+
+reject_changed () {
+    grep -v '[.S]\.[.5]\.\.\.\.T\.    '"$1"
+}
+
+reject_changed_files_under () {
+    reject_changed "$1/.*"
+}
+
+# We've deleted some kernel modules (see the 'network' Puppet module).
+reject_deleted_kernel_modules_in () {
+    grep -v '^missing[[:space:]]\+/lib/modules/.*/'"$1"
+}
+
+
+# We've changed the mode, owner or group of some configuration
+# files. If such are changed outside the purview of this policy, that
+# may be a significant event; but it will be caught by AIDE and
+# auditable.
+reject_changes_solely_in_mode_owner_or_group () {
+    # this will also reject lines which start with '.........', but
+    # there aren't any of those: if there were no changes, rpm -Va
+    # would not print a line
+    grep -v '^\.\(M\|\.\)\.\.\.\(U\|\.\)\(G\|\.\)\.\.'
+}
+
+# The NVIDIA driver changes some OpenGL files.
+reject_nvidia_changes () {
+    reject_changed_symlink_namely /usr/lib64/xorg/modules/extensions/libglx.so | \
+    reject_changed_symlink_namely /usr/lib64/libGL.so.1
+}
+
+# We remove the PackageKit update icon, because updating packages
+# isn't done by users around here.
+reject_package_updater_removal () {
+    reject_missing_file_namely /etc/xdg/autostart/gpk-update-icon.desktop
+}
+
+# It seems Centrify overwrites its own configuration files during
+# operation.
+reject_centrify_changes () {
+    reject_changed_files_under /etc/centrifydc             | \
+    reject_changed             /etc/init.d/centrifydc      | \
+    reject_changed             /etc/logrotate.d/centrifydc
+}
+
+# It seems McAfee CMA overwrites its own configuration files during
+# operation.
+reject_mcafee_changes () {
+    reject_changed_files_under /etc/cma\\.d      | \
+    reject_changed_files_under /opt/McAfee     | \
+    reject_missing_file_namely /opt/McAfee/cma/scratch/Server\\.xml | \
+    reject_missing_file_namely /opt/McAfee/cma/srpubkey\\.bin
+}
+
+# I don't know why this is gone, but if we ever want no KACE agent on
+# a system, we can re-kickstart it or something.
+reject_kace_changes () {
+    reject_missing_file_namely /opt/dell/kace/bin/RemoveKbox50
+}
+
+# Not sure what does this change:
+# --- sshd	2012-12-13 07:50:45.000000000 -0600
+# +++ sshd.changed	2013-08-01 12:57:38.098355483 -0500
+# @@ -130,7 +130,6 @@
+#  	[ -f /etc/ssh/sshd_config ] || exit 6
+#  	# Create keys if necessary
+#  	if [ "x${AUTOCREATE_SERVER_KEYS}" != xNO ]; then
+# -		do_rsa1_keygen
+#  		do_rsa_keygen
+#  		do_dsa_keygen
+#  	fi
+reject_sshd_init_script_change () {
+    reject_changed /etc/rc.d/init.d/sshd
+}
+
+
+reject_expected_changes () {
+    # the cat is so that every reject_* command will always end with a
+    # | \
+    reject_config_files                               | \
+    reject_deleted_kernel_modules_in firewire         | \
+    reject_deleted_kernel_modules_in dccp             | \
+    reject_deleted_kernel_modules_in rds              | \
+    reject_deleted_kernel_modules_in sctp             | \
+    reject_deleted_kernel_modules_in bluetooth        | \
+    reject_changes_solely_in_mode_owner_or_group      | \
+    reject_missing_config_file_namely /etc/cron.deny  | \
+    reject_missing_config_file_namely /etc/at.deny    | \
+    reject_package_updater_removal                    | \
+    reject_nvidia_changes                             | \
+    reject_centrify_changes                           | \
+    reject_mcafee_changes                             | \
+    reject_kace_changes                               | \
+    reject_changed /etc/init/control-alt-delete.conf  | \
+    reject_sshd_init_script_change                    | \
+    cat
+}
+    
+rpm -Va | reject_expected_changes

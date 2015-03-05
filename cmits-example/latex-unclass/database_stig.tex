@@ -1,0 +1,523 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Database STIG compliance}
+\label{DatabaseSTIGCompliance}
+
+Some pieces of database software are included in RHEL and supported by Red
+Hat. Because of this, many items of compliance with the Database STIG are
+provided by the operating system, and others are controlled by this
+\CMITSPolicy . These items are documented here, rather than in the
+documents of whatever Automated Information System (AIS) may be using
+the database, to avoid duplication and ensure accuracy.
+
+
+
+\section{Database STIG compliance under PostgreSQL}
+\label{DatabaseSTIGPostgreSQL}
+
+PostgreSQL is included in RHEL. Some Database STIG requirements are
+therefore met as part of the requirements placed on operating system
+configuration and maintenance by other documents, like the UNIX SRG.
+See~\S\ref{dbms-with-rhel} for details on these.
+
+Some requirements are met by configuring PostgreSQL in a certain way.
+See~\S\ref{module_postgresql} for details on these.
+
+Many other requirements on DBMS configuration are met by the default
+configuration of PostgreSQL as included in RHEL. These are documented in
+this section.
+
+\dinkus
+
+\documents{iacontrol}{DCCS-1}\documents{databasestig}{DG0007}%
+The Database STIG is the primary document used in securing the PostgreSQL
+DBMS under RHEL.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{ECLP-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0005}%
+The DBA account for the PostgreSQL DBMS under RHEL is \verb!postgres!,
+which does not have any ``host system administrator privileges.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCFA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0014}%
+PostgreSQL as distributed in RHEL contains no ``demonstration or sample
+databases or applications.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{ECLP-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0040,DG0041}%
+The ``DBMS software installation account'' for the PostgreSQL DBMS under
+RHEL, \verb!postgres!, is not permitted to log in by default. Only system
+administrators can perform actions using the privileges of this user, by
+the use of the \verb!su! or \verb!sudo! commands; all uses of the account
+are logged by default. (See the UNIX SRG Compliance index on
+\unixsrg{GEN003660} and \unixsrg{GEN001060}.)
+
+\notapplicable{iacontrol}{ECLP-1}\notapplicable{databasestig}{DG0051}%
+PostgreSQL as included in RHEL does not include ``job queues managed by
+the database.''
+
+\notapplicable{iacontrol}{ECAN-1}\notapplicable{databasestig}{DG0053}%
+PostgreSQL does not use a ``client database connection configuration
+file.''
+
+\documents{iacontrol}{IAIA-1}\documents{databasestig}{DG0067}%
+For PostgreSQL as included in RHEL, the lists of ``DBMS database
+objects, database configuration files, associated scripts and applications
+defined within or external to the DBMS that access the database, and DBMS
+/ user environment files/settings'' are as follows:
+
+The list of system-level DBMS-related files can be obtained by running the
+commands
+
+\begin{verbatim}
+rpm -ql postgresql-server
+rpm -q --configfiles postgresql-server
+\end{verbatim}
+
+on a server with PostgreSQL installed. ``User environment files/settings''
+are stored in the user's shell initialization file and \verb!.pgpass!
+file. See~\S\ref{module_home} and~\S\ref{ProceduresForUsers} for more
+details.
+
+\documents{iacontrol}{IAIA-1}\documents{databasestig}{DG0068}%
+The \verb!psql! command allows specification of a password on the command
+line; this practice is strictly prohibited, as required,
+in~\S\ref{ProceduresForUsers}.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{ECRC-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0084}%
+PostgreSQL has an \emph{auto-vacuuming} feature which ``clear[s] residual
+data from storage locations after use.'' The default configuration
+included in RHEL enables auto-vacuuming.
+
+\unimplemented{databasestig}{DG0085}{We need to revisit DBA users in light
+of later checklist requirements.}
+
+\documents{iacontrol}{DCFA-1}\documents{databasestig}{DG0098}%
+A review of the PostgreSQL 8.4 documentation has shown that PostgreSQL
+does not support ``objects defined within the database, but stored
+externally to the database.'' Thus they are implicitly disabled, which
+fulfills the requirement.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCFA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0099}%
+PostgreSQL as included in RHEL is prevented from running external
+executables by the SELinux policy.
+
+\notapplicable{iacontrol}{DCFA-1}\notapplicable{databasestig}{DG0101}%
+PostgreSQL as included in RHEL is prevented from running external
+executables by the SELinux policy; therefore no OS accounts are used to
+``execute external procedures.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{ECLP-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0120}%
+Since PostgreSQL as included in RHEL does not support external objects and
+cannot run external executables, users inside the database are effectively
+(if trivially) prevented from accessing ``objects stored and/or executed
+outside of the DBMS security context.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCFA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0102}%
+All ``DBMS processes or services'' for PostgreSQL as included in RHEL are
+owned by the \verb!postgres! user, which is a ``custom, dedicated OS
+account.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCPA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0111}%
+All ``DBMS data files, transaction logs and audit files'' for PostgreSQL
+as included in RHEL are stored in ``dedicated directories... separate from
+software or other application files.'' These are under
+\verb!/var/lib/pgsql!, and there are separate directories for each of the
+three kinds of files. Permissions to each are ``customized to allow access only
+by authorized users and processes.''
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCPA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0112}%
+DBMS system data files for PostgreSQL are ``stored in dedicated disk
+directories.''
+
+\doneby{DBAs}{iacontrol}{DCPA-1}\doneby{DBAs}{databasestig}{DG0113}%
+To prevent ``database tables from unrelated applications'' from being
+``stored in the same database files'' under PostgreSQL, ensure that for
+each ``unrelated application'' there is a separate database, using the
+\verb!createdb! utility as appropriate.
+
+\doneby{admins}{iacontrol}{COBR-1}\doneby{admins}{databasestig}{DG0114}%
+Make sure that ``DBMS files critical for DBMS recovery'' are ``stored on
+RAID or other high-availability storage devices,'' by specifying a RAID
+hard drive setup when procuring any server on which a PostgreSQL database
+will reside.
+
+\doneby{DBAs}{iacontrol}{ECLP-1}\doneby{DBAs}{databasestig}{DG0116}%
+Do not grant ``DDL (Data Definition Language) and/or system
+configuration'' privileges to non-privileged DBMS users. To obtain a
+``list of privileged role assignments'' in an installation of PostgreSQL
+as included in RHEL, perform the following commands as root on the server
+in question:
+
+\begin{verbatim}
+    sudo -u postgres psql
+    \l
+    [A list of databases and privileges is output.]
+    \du
+    [A list of roles and privileges is output.]
+    \c foo
+    \dp
+    [A list of objects and privileges is output.]
+    \q
+    #
+\end{verbatim}
+
+Replace `foo' in the above directions with the name of a database from the
+list output by \verb!\l!. There may be multiple databases. This data is
+sent to administrators automatically in a monthly report;
+see~\S\ref{class_postgresql::stig}. 
+
+See~\S\ref{DBDocumentedWithIAO} for the list of IAO-approved DBA role
+assignments.
+
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{ECAN-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0123}%
+Access to ``DBMS system tables and other configuration or metadata'' is
+suitably restricted by default. See Chapter 44, ``System Catalogs,'' in
+\cite{pgsql-documentation}.
+
+\doneby{DBAs}{iacontrol}{ECLP-1}\doneby{DBAs}{databasestig}{DG0004,DG0124}%
+Do not use a privileged database account for non-administrative purposes.
+For each application in the database, create a per-application object
+owner user and/or per-application administrator user; use one of these,
+and not a DBA account, to create the objects necessary for the application
+and to maintain the application. Disable this account ``when not
+performing installation or maintenance actions.''
+
+\doneby{DBAs}{iacontrol}{ECSD-1}\doneby{DBAs}{databasestig}{DG0015}%
+For each application which uses the database, make sure that the database
+users which are used in production are not allowed to execute DDL
+statements (\emph{e.g.} creating and dropping tables, indices, views,
+etc.).
+
+\documents{iacontrol}{DCSS-1}\documents{databasestig}{DG0155}%
+``Trustworthiness'' of ``data files and... configuration files'' for
+PostgreSQL as included in RHEL is provided by the underlying operating
+system. See~\S\ref{iac-DCSS-1} for a summary of measures taken to preserve
+system state integrity.
+
+\notapplicable{iacontrol}{ECLO-1}\notapplicable{databasestig}{DG0160}%
+According to its documentation \cite{pgsql-documentation}, PostgreSQL does
+not appear to provide a means to ``restrict the number of failed logins
+within a specified time period.''
+
+\notapplicable{iacontrol}{ECDC-1}\notapplicable{databasestig}{DG0170}%
+A review of the PostgreSQL documentation \cite{pgsql-documentation}
+indicates that there is no way to turn off transaction journalling in
+PostgreSQL; thus it is enabled as required, but the checklist says, ``If
+no configuration settings are available to enable or disable transaction
+journaling, this check is Not Applicable.''
+
+\doneby{DBAs}{iacontrol}{ECLP-1}\doneby{DBAs}{databasestig}{DG0063}%
+Do not grant ``privileges to restore database data, objects, or other
+configuration or features'' to unauthorized DBMS accounts. 
+
+\documents{iacontrol}{ECML-1}\documents{databasestig}{DG0087}%
+Because PostgreSQL as included in RHEL ``does not provide the capability
+to mark or label sensitive data within the DBMS, this check is Not a
+Finding.''
+
+\documents{iacontrol}{ECLO-1}\documents{databasestig}{DG0133}%
+PostgreSQL as included in RHEL ``does not provide a method or means for
+configuration of account lock times,'' so ``this check is Not a Finding.''
+
+
+
+
+
+
+
+
+\section{Database STIG compliance under SQLite}
+\label{DatabaseSTIGSQLite}
+
+SQLite is not a traditional server-based database. It is, quoting from its
+website, ``a software library that implements a self-contained,
+serverless, zero-configuration, transactional SQL database engine.''
+Because it does not implement a client-server interaction model, it
+doesn't listen over the network, nor authenticate users. Authorization to
+operate on the database is based on operating-system-level access to the
+single file containing the database, so there is no system of user
+accounts with differing levels of access. SQLite also has no run-time
+configuration. Consequently many Database STIG requirements cannot be
+applied to SQLite. Those dealing with control of the files that comprise
+an SQLite installation, including security patches, are applicable and are
+covered in~\S\ref{dbms-with-rhel}.
+
+\documents{iacontrol}{DCCS-1}\documents{databasestig}{DG0007}%
+The Database STIG is the primary document used in securing the SQLite
+DBMS, as far as it applies.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCFA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0014}%
+SQLite as distributed in RHEL contains no ``demonstration or sample
+data\-bases or applications.''
+
+
+
+
+
+\section{Databases included with RHEL}
+\label{dbms-with-rhel}
+
+Some requirements are met by existing policies and procedures written
+throughout this \CMITSPolicy\, and notated in those existing places. See
+the Database STIG Compliance index for an exhaustive list of these; look
+on the referenced pages for phrases like ``databases included with RHEL.''
+
+\documents{iacontrol}{VIVM-1}\documents{databasestig}{DG0003,DG0097}%
+For DBMSes included with RHEL, updates and patches are handled as for any
+RHEL update. See~\S\ref{Patching}.
+
+\documents{iacontrol}{DCSL-1}\documents{databasestig}{DG0009}%
+Permissions for software libraries relating to DBMSes included with RHEL
+are controlled by RHEL's packaging system, and are restricted to the
+fewest accounts requiring access. 
+
+\documents{iacontrol}{DCSL-1}\documents{databasestig}{DG0010}%
+Permissions and changes to database executable and configuration files for
+DBMSes included with RHEL are checked periodically by
+\S\ref{class_rpm::stig} and~\S\ref{class_aide}.
+
+\documents{iacontrol}{DCPR-1}\documents{databasestig}{DG0011}%
+``Software libraries'' and ``management tools'' for DBMSes included with
+RHEL are managed and patched using the same procedures as the operating
+system software. See~\S\ref{Patching}.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCPA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0012}%
+Data and configuration directories for DBMSes included with RHEL, where
+applicable, are dedicated for those purposes by the operating system.
+For executables and libraries, SELinux is the ``method that provides...
+separation of security context.'' Access controls are well-defined through
+the RPM packaging system, mitigating the discussed vulnerability.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCFA-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0016}%
+DBMSes included with RHEL have separate components in separate RPM
+packages; unneeded components are not installed.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{DCSL-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0019}%
+For DBMSes included with RHEL, ownership of ``DBMS software libraries and
+configuration files files'' is set by the vendor in the RPM package.
+
+\bydefault{RHEL5,RHEL6}{iacontrol}{COTR-1}\bydefault{RHEL5,RHEL6}{databasestig}{DG0115}%
+DBMS system files for DBMSes included in RHEL are provided on the OS
+media; trusted recovery measures used for the OS apply to the DBMS
+software as well.
+
+\notapplicable{iacontrol}{ECWM-1}\notapplicable{databasestig}{DG0179}%
+``The DBMS warning banner should meet DoD policy requirements,'' but ``a
+warning banner displayed as a function of an Operating System or
+application login for applications that use the database makes this check
+Not Applicable.'' See~\S\ref{iac-ECWM-1} for summaries of where warning
+banners are installed by this policy; per-application warning banners are
+covered in per-application documentation.
+
+\documents{iacontrol}{COSW-1}\documents{databasestig}{DG0187}%
+``DBMS software libraries'' for DBMSes included in RHEL are part of the
+operating system distribution, so OS install media contains them.
+See~\S\ref{ProceduresCriticalSoftware} for procedures regarding OS install
+media; see~\S\ref{iac-COSW-1} for other assurances about software needed
+for operations continuity.
+
+
+
+
+
+
+\section{Requirements implemented by each system}
+\label{per-system-databasestig}
+
+(``System'' here means an Automated Information System (AIS), not an
+individual host.) The requirements not covered by this \CMITSPolicy ,
+which must be addressed in per-system documentation, are summarized here:
+
+\begin{description}
+\item[DG0011] How database configuration files and stored procedures are
+configuration-managed; how system personnel interface with IT regarding
+database software patches
+\item[DG0013] How the database is backed up and recovered, and evidence
+that such procedures have been followed
+\item[DG0017] Whether production and non-production databases reside on
+the same host, and, if so, who authorized that
+\item[DG0019] Ownership of ``application software and configuration
+files'' (this may be covered in a system-specific way by a piece of policy
+elsewhere in this \CMITSPolicy\, rather than in a system-specific
+document)
+\item[DG0020] How database backups are verified and backup procedures
+tested, and evidence that such testing and verification procedures have
+been followed
+\item[DG0064] How backups are protected during all phases of backup and
+recovery
+\item[DG0065] How users are authenticated using DoD PKI certificates, or
+how this requirement is mitigated
+\item[DG0069,DG0076] How exported production data is protected and
+modified, if or when it is imported into a development database
+\item[DG0066, DG0067, DG0071, DG0072, DG0073, DG0079, DG0125, DG0126,
+DG0127, DG0128, DG0129] Considerations regarding password authentication,
+if it is used
+\item[DG0078] A list of authorized DBMS accounts, and how each use of
+those accounts is mapped to a specific person
+\item[DG0088] How periodic and unannounced vulnerability scans of the
+database are conducted
+\item[DG0090,DG0092,DG0106] How sensitive data are encrypted at rest if required
+\item[DG0093] How remote administrative database access can only happen
+over encrypted channels
+\item[DG0096] How DBMS IA policies and procedures are reviewed at least
+once a year
+\item[DG0103] How the DBMS server software is configured to limit access
+by network address
+\item[DG0104] How DBMS ``services/processes'' are named in a clearly
+identifiable fashion. ``An example ... [is] \verb!prdinv01!.''
+\item[DG0107] Identification of any ``sensitive data'' such as PII or
+classified which is stored in the DBMS
+\item[DG0108] ``Assignment of the priority to be placed on restoration of
+the DBMS''
+\item[DG0109] How the DBMS is isolated from other application services
+\item[DG0110] How the DBMS is isolated from ``security support
+structures'' such as Windows domain controllers or Kerberos servers
+\item[DG0116] A list of IAO-approved roles ``assigned privileges to
+perform DDL and/or system configuration actions''
+\item[DG0118] How the IAM reviews changes to DBA role assignments
+\item[DG0119] That the ``application user'' does not have ``administrative
+privileges.''
+\item[DG0124] Which DBMS accounts, specific to the application, create and
+maintain the DBMS objects needed by the application
+\item[DG0151] That the DBMS listens on a static, default port, if the DBMS
+listens over the network
+\item[DG0156] Who is the IAO for the DBMS, and evidence that the IAM has
+assigned and authorized that person
+\item[DG0157, DG0158, DG0159, DG0198] How remote database administration
+is either disabled, or documented, authorized, audited, monitored by the
+IAO or IAM, and done over an encrypted channel
+\item[DG0167] How sensitive data served by the DBMS is encrypted in
+transit
+\item[DG0186] How the database is protected from access originating from
+public or unauthorized networks
+\item[DG0187] (Possibly) How to quickly reinstate operation of the
+application that talks to the database, in case of contingency
+\item[DG0075,DG0190,DG0191,DG0192] How the database talks to remote
+databases and applications in a compliant and secure manner, if it does
+\item[DG0089,DG0194,DG0195] How developers are kept from disturbing
+production DBMS instances
+\item[DG0008] A list of authorized object owner users in the application's
+database
+\item[DG0060] A list of ``non-interactive, n-tier connection, and shared
+accounts,'' evidence of approval of these by the IAO, and how each action
+taken by one of these users can be traced to an individual person
+\item[DG0070,DG0074] User account lifecycle for database users, including
+deletion
+\item[DG0091] How ``custom and GOTS application source code stored in the
+database'' has been ``protected with encryption or encoding''
+\item[DG0105] Authorized list of privileges for application users
+\item[DG0119] That application users do not have ``administrative
+privileges'' such as creating tables and other DDL
+\item[DG0121] How application user privileges are granted solely by
+granting membership in roles, not directly to the application user
+\item[DG0122] How access to ``sensitive data'' (such data as the
+information owner would deem as requiring encryption) is restricted to
+authorized users
+\item[DG0138] How ``access grants to sensitive data'' (such as requires
+encryption) are ``restricted to authorized user roles''
+\item[DG0165,DG0166] How symmetric and asymmetric (resp.) keys are
+protected in a compliant fashion (if data is encrypted in the database)
+\item[DG0172] How changes to security labels are audited (if sensitive
+data needing encryption or classified data are stored in the database)
+\item[DG0193] How non-interactive account passwords expire at least every
+year
+%
+\end{description}
+
+
+See the Database STIG and security checklists for details on these
+requirements.
+
+
+
+
+
+\section{Requirements which may become applicable in future}
+\label{DatabaseFutureRequirements}
+
+\begin{description}
+\item[DG0085] If a database administrator is needed in future, the
+least privileges needed by that user for day-to-day operation must be
+determined, and the user must be limited to those privileges.
+\end{description}
+
+\notapplicable{iacontrol}{DCPP-1}\notapplicable{databasestig}{DG0152}%
+No PostgreSQL installations under the purview of this policy accept
+connections across ``network or enclave boundaries as defined in the PPS
+CAL'' at \url{http://iase.disa.mil/ports/index.html}.
+
+\documents{iacontrol}{ECIC-1}\documents{databasestig}{DG0171}%
+Because no DBMSes containing classified information are presently managed
+by this policy, there are trivially no interconnections between DBMSes of
+differing classification levels.
+
+\documents{iacontrol}{DCFA-1}\documents{databasestig}{DG0100}%
+Because no DBMSes using replication are presently managed by this policy,
+no DBMS accounts exist for the purpose of replication.
+
+\documents{iacontrol}{ECLO-2}\documents{databasestig}{DG0135}%
+Because no DBMSes containing classified information are presently managed
+by this policy, DBMS users need not be notified at login regarding
+previous successful and failed DBMS login attempts.
+
+
+
+
+
+\section{Requirements which need further attention}
+\label{DatabaseFurtherAttention}
+
+For PostgreSQL as included in RHEL:
+
+\unimplemented{databasestig}{DG0052}{Names of applications that access the
+database may not be logged in the audit trail.}
+
+\unimplemented{databasestig}{DG0054}{Because names of applications may not
+be logged, DBMS access using unauthorized applications may not be
+discovered by monitoring the audit logs.}
+
+
+
+\section{Things which must be documented with the IAO}
+\label{DBDocumentedWithIAO}
+
+\documents{iacontrol}{ECLP-1}\documents{databasestig}{DG0087,DG0116}%
+The IAO-authorized list of ``roles assigned privileges to perform DDL
+and/or system configuration actions in the database'' in PostgreSQL as
+included in RHEL is this:
+
+\begin{itemize}
+\item \verb!postgres!
+\end{itemize}
+
+As the \verb!postgres! user cannot log in, only system administrators can
+become this user.
+
+Changes to this list must be discussed with the IAO, and changes are of
+course tracked. Each AIS may also have a list of database administrative
+roles.
+
+\documents{iacontrol}{DCSD-1}\documents{databasestig}{DG0153}%
+The IAO-authorized list of DBA role assignments in PostgreSQL as included
+in RHEL is this:
+
+\begin{itemize}
+\item \verb!postgres!
+\end{itemize}
+
+As the \verb!postgres! user cannot log in, only system administrators can
+become this user.
+
+Changes to this list must be discussed with the IAO, and changes are of
+course tracked. Each AIS may also have a list of database administrative
+roles.
+

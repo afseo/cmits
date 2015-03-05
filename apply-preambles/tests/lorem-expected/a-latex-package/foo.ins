@@ -1,0 +1,29 @@
+%% --- BEGIN LOREM ---
+%% Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+%% incididunt ut labore et dolore magna aliqua.
+%% --- END LOREM ---
+%%
+%% Something I wrote at the top of the .ins file, before running the preamble
+%% script.
+%%
+
+\input docstrip
+\usedir{foo/bar/baz}
+\preamble
+--- BEGIN LOREM ---
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua.
+--- END LOREM ---
+
+This is the preamble written before running the preamble script.
+
+Made in 2012 by John Doe at 3743TSW/Z3XI, <john.doe.ctr@xzcb.sdvb.example.com>
+
+\endpreamble
+\generate{\file{foo.sty}{\from{foo.dtx}{package}}}
+
+\obeyspaces
+\Msg{Fun stuff.}
+
+\endbatchfile
+

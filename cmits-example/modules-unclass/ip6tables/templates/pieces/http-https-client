@@ -1,0 +1,6 @@
+
+# There is a place for limiting outgoing web page requests.
+# As of right now that place is not at the client.
+-A OUTPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A OUTPUT -p tcp -m tcp --dport 443 -j ACCEPT
+

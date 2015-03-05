@@ -1,0 +1,25 @@
+# UNIX SRG GEN003602, GEN003604: reject ICMP timestamp requests. Since we're
+# dropping packets by default, what we do here is accept a bunch of ICMP
+# messages that aren't timestamp requests.
+#
+# http://www.ciscopress.com/articles/article.asp?p=174313&seqNum=4 provides
+# useful industry guidance for ICMP security.
+#
+# "! -f": Reject ICMP fragments. Legitimate ICMP messages are so short that
+# they would never be fragmented.
+#
+# Enable pinging.
+-A INPUT -p icmp -m icmp ! -f --icmp-type ping -s 127.0.0.1 -j ACCEPT
+-A INPUT -p icmp -m icmp ! -f --icmp-type pong -s 127.0.0.1 -j ACCEPT
+<% site_subnets.each do |subnet| %>
+-A INPUT -p icmp -m icmp ! -f --icmp-type ping -s <%=subnet-%> -j ACCEPT
+-A INPUT -p icmp -m icmp ! -f --icmp-type pong -s <%=subnet-%> -j ACCEPT
+<% end %>
+# This type has many codes. Code 4 (fragmentation needed but do-not-fragment
+# flag set) needed for path MTU discovery. "Interesting implications in IPsec."
+-A INPUT -p icmp -m icmp ! -f --icmp-type destination-unreachable -s 127.0.0.1 -j ACCEPT
+<% site_subnets.each do |subnet| %>
+-A INPUT -p icmp -m icmp ! -f --icmp-type destination-unreachable -s <%=subnet-%> -j ACCEPT
+<% end %>
+# Enable traceroute.
+-A INPUT -p icmp -m icmp ! -f --icmp-type time-exceeded -j ACCEPT

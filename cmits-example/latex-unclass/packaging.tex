@@ -1,0 +1,67 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Packaging}
+\label{Packaging}
+
+You should put software in packages where possible. This chapter discusses
+how and why, in general terms. How this works out in your organization
+will vary.
+
+
+
+\section{Why package?}
+
+Packaging software makes it easier to add, remove and upgrade. It also can
+push the work of satisfying software dependencies off of you, the
+administrator, and onto the packaging system. Software that's been
+packaged and installed is on the local hard drive of each machine, so it
+works just as well when the network is gone (on the laptop of someone who
+is on a business trip, for example), and runs faster. It's easier to
+control the interactions between software providing some duplicate
+functionality (\emph{e.g.}, OpenMPI vs.  MPIch2) when it's in
+packages---if it's not installed it's unavailable, and if you want a
+per-machine or per-user choice, the \emph{alternatives} subsystem or the
+\emph{modules} subsystem can help you to make that choice completely and
+simply.
+
+
+
+\section{The RPM package manager}
+
+We speak here about packaging in the context of \emph{RPM}, the RPM
+Package Manager (formerly Red Hat Package Manager). RPM supports
+installation, removal and upgrade of packages of software, and keeps track
+of data about packages which eases administration, such as which packages
+depend on which others, whether a package has been cryptographically
+signed, what versions of packages are installed, and whether files which
+have been installed as part of a package have changed since being
+installed.
+
+Before packaging a piece of software you will want to see if someone else
+has packaged it already and if that package is suitable. Fedora's EPEL
+(Extra Packages for Enterprise Linux) project
+(\url{http://fedoraproject.org/wiki/EPEL}) packages some software not
+packaged as part of Red Hat Enterprise Linux. When obtaining and
+installing RPM packages not from the vendor, you should make sure you
+trust the packager. Owing to RPM's flexibility and use across several
+distributions of Linux, random RPMs you find on the Internet will not
+necessarily install or run properly on Red Hat Enterprise Linux.
+
+If a package is not already extant for the software you need, you can make
+your own package. The act of packaging software with RPM is usually almost
+as easy as installing it from source. See the Fedora RPM Guide
+(\url{http://docs.fedoraproject.org/drafts/rpm-guide-en/}) for more about
+the generalities of this topic; specifics will vary by organization.
+
+
+\input{org_packaging}

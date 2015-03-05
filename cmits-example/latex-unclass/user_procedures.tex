@@ -1,0 +1,100 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Procedures for users}
+\label{ProceduresForUsers}
+
+This chapter contains directions for users of hosts covered by this
+\CMITSPolicy .
+
+
+
+\section{Security Features User's Guide}
+\label{SFUG}
+
+This section contains guidance on the security features of information
+systems under this \CMITSPolicy\ as required by the SPAN STIG.
+
+\subsection{Single-user KVM switches}
+
+Single-user keyboard-video-mouse (KVM) switches are used on unclassified
+systems to reduce clutter due to too many keyboards, mice and monitors on
+a desk. \documents{spanstig}{KVM01.002.00} Here's what you need to know
+about how to operate these KVM switches securely:
+
+\begin{enumerate}
+\item Before interacting with a system connected to a KVM switch, make
+    sure it's the system you think it is, and verify its classification.
+    It should have a banner that lets you know this information.
+\item Before switching to another system, lock your screen; then verify
+    the identity and classification of the system you've switched to
+    before interacting with it.
+\end{enumerate}
+
+\doneby{users}{spanstig}{KVM01.004.00} Do not connect a keyboard with a
+smartcard reader to a KVM switch.
+
+\doneby{users}{spanstig}{KVM01.005.00} Do not connect a wireless keyboard
+or mouse to a KVM switch. \spanstig{KVM01.005.00} says that such devices
+must comply with the current Wireless STIG, and the current Wireless STIG
+says there are presently no compliant devices. (In order for them to be
+compliant, they would have to use FIPS 140-2 compliant encryption.)
+
+
+\subsection{Removable devices: prohibitions and requirements}
+
+Here are some DoD-level requirements that you, the user, should know
+about.
+
+\doneby{users}{spanstig}{USB00.001.00} When removing a hot-swappable
+device such as a USB device from one computer and connecting it to
+another, you must wait at least 60 seconds in between.
+
+\doneby{users}{spanstig}{USB01.001.00} MP3 players, camcorders and digital
+cameras must not be attached to information systems (ISes) without prior
+DAA approval.
+
+\doneby{users}{spanstig}{USB01.002.00} No USB device may be connected to a
+DoD IS unless approved by the Information Assurance Officer (IAO).
+
+\documents{spanstig}{USB01.003.00} Thumb drives that look like anything
+else besides a thumb drive (e.g., a watch, a pen, a piece of sushi, a
+little teddy bear...) are not permitted and will be confiscated.
+
+\doneby{users}{spanstig}{USB01.008.00} Any USB device with persistent
+memory (e.g., USB hard drives) must be formatted with a modern filesystem
+(e.g., NTFS, ext3, HFS; not FAT).
+
+
+\subsection{USB usage and handling}
+
+\documents{spanstig}{USB01.009.00} Existence of this section is required
+by \spanstig{USB01.009.00}. \documents{spanstig}{USB01.010.00} Discussion
+within this section of USB devices with persistent nonremovable memory is
+required by \spanstig{USB01.010.00}.
+
+Under current directives, you should not plug any USB storage device into
+any host without authorization from the Information Assurance Manager
+(IAM), authorization that is specific to you, the computer in question,
+and the storage device in question.
+
+
+\section{Miscellaneous prohibitions}
+
+\documents{iacontrol}{IAIA-1,IAIA-2}\documents{databasestig}{DG0068}%
+When using the \verb!psql! client to connect to the PostgreSQL database,
+do not supply on the command line a conninfo string containing a password.
+(Conninfo strings are described in the libpq documentation; try
+this URL:
+\url{http://www.postgresql.org/docs/8.4/static/libpq-connect.html}.) This
+requirement flows from the more general requirement that database
+passwords must not be stored in clear text.

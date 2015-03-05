@@ -1,0 +1,3 @@
+-A INPUT -m tcp -p tcp --dport 2049 -j ACCEPT
+-A INPUT -m udp -p udp --dport 111 -j ACCEPT
+-A INPUT -m tcp -p tcp --dport 111 -j ACCEPT

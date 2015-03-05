@@ -1,0 +1,89 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\section{Manual Mac compliance}
+\label{ManualMac}
+
+Being a UNIX-based operating system, Mac OS X can be configured for
+compliance programmatically in many cases, and compliance with many
+requirements levied by the Mac OS X STIG is in fact automated by this
+policy. But some requirements are not automatable as written because they
+require human judgment, and for some settings, the effort it would take to
+programmatically set them is not worth the return. ``Patches gratefully
+accepted,'' as they say.
+
+For these requirements and settings, administrators must comply manually.
+
+\dinkus
+
+\doneby{admins}{macosxstig}{OSX00010 M6}%
+\doneby{admins}{mlionstig}{OSX8-00-01165}%
+Do not install unnecessary packages on a Mac.
+
+\doneby{admins}{macosxstig}{OSX00015 M6}%
+Do not call the administrator account on a Mac something easy to guess,
+like ``Administrator,'' or the hostname of the Mac.
+
+\doneby{admins}{macosxstig}{OSX00055 M6}%
+Keep all application software on Macs current with security patches and
+hotfixes. For Apple-distributed applications, the Apple Software Updater
+does this. Other applications must also be kept current.
+
+\doneby{admins}{macosxstig}{OSX00670 M6}%
+\doneby{admins}{mlionstig}{OSX8-00-01265}%
+Keep the operating system up to date on Macs, as done with the Apple
+Software Updater.
+
+\doneby{admins}{macosxstig}{OSX00295 M6,OSX00300 M6}%
+Disable guest logon and guest access to shared folders on Macs.
+
+This is done by unchecking the appropriately labelled checkbox found when
+the Guest user is chosen in the Accounts section of System Preferences.
+
+\doneby{admins}{mlionstig}{OSX8-00-00110,OSX8-00-00115}%
+Do not create temporary or emergency accounts. (This is a trivial
+fulfillment of the STIG requirements. If these account types are
+necessary, admins must create and apply policies to ensure their
+timely expiration.)
+
+
+\doneby{admins}{macosxstig}{OSX00430 M6}%
+Make Macs require administrator authentication to unlock each System
+Preference pane.
+
+This is done by checking the appropriately labelled checkbox found in the
+General tab of the Security section of System Preferences.
+
+\doneby{admins}{macosxstig}{OSX00475 M6,OSX00480 M6,OSX00485 M6}%
+\doneby{admins}{macosxstig}{OSX00490 M6,OSX00495 M6,OSX00500 M6}%
+\doneby{admins}{macosxstig}{OSX00505 M6,OSX00510 M6}%
+Turn off Screen Sharing, File Sharing, Printer Sharing, Web Sharing,
+Remote Login, Remote Management (Apple Remote Desktop), Remote Apple
+Events, and Xgrid Sharing on Macs.
+
+This is done by unchecking the appropriately labelled checkboxes found in
+the Sharing section of System Preferences.
+
+\doneby{admins}{macosxstig}{OSX00675 M6}%
+Maintain ``system recovery backups'' for Macs as required by the STIG.
+
+The contingency backups that can be made
+using~\S\ref{module_contingency_backup} may form a large part of your
+system recovery backup. If you avoid modifying Macs except using this
+\CMITSPolicy\, you can rest assured that your ``emergency system recovery
+data'' has ``been updated following the last system modification.''
+
+See the following sections for more requirements binding on you as a
+Mac administrator:
+\begin{itemize}
+\item \S\ref{module_single_user} (\nameref{module_single_user})
+\end{itemize}

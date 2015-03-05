@@ -1,0 +1,6 @@
+*filter
+# UNIX SRG GEN008540: drop by default.
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT DROP [0:0]
+

@@ -1,0 +1,77 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+%
+% This file is the backbone of a CMITS policy document: it includes the
+% chapters, it sets out organization-specific definitions, and it
+% pulls in the magic that makes it a CMITS document.
+%
+% Things that are input or included come from files in the TEXINPUTS path,
+% which will point to directories named in make_config.ini. Look in those
+% directories.
+
+% One side, because this document is unlikely ever to be printed on paper,
+% and when you're looking at it in a PDF viewer, odd pages are below even
+% pages, not beside them, so twoside pages seem to alternate back and
+% forth for no reason.
+\documentclass[oneside]{book}
+
+\newcommand{\CMITSPolicy}{Configuration Management for IT Systems Example
+Policy}
+\title{\CMITSPolicy}
+\author{Auto-generated from {\tt puppet} policy files}
+\date{\today}
+
+\input{cmits/top_magic}
+
+\booksecuritylabel{UNCLASSIFIED}
+\distributionC{for ADMINISTRATIVE and OPERATIONAL use}{96 SK/ISN, Eglin
+AFB, FL}
+
+\input{cmits/requirements_documents}
+
+
+\begin{document}
+
+
+\input{cmits/frontmatter}
+\include{introduction}
+\input{cmits/compliance_by_ia_control}
+\include{unix_srg}
+\include{macosx_stig}
+\include{span_stig}
+\include{database_stig}
+\include{user_procedures}
+\include{contingency}
+\include{production}
+\include{procedures}
+\include{maintenance}
+\include{packaging}
+\input{cmits/policy}
+\input{cmits/attendant_files}
+\input{cmits/attendant_templates}
+\include{external_requirements}
+
+% We want numbering to continue, for citability, so we comment these two
+% out:
+% \appendix stops numbering things and starts lettering them
+%\appendix
+% \backmatter stops numbering things
+%\backmatter
+
+\bibliography{references-unclass}{}
+\bibliographystyle{plain}
+
+\input{cmits/indices}
+
+
+\end{document}

@@ -1,0 +1,38 @@
+% \iffalse meta-comment
+% --- BEGIN ATSIGN ---
+% foo@bar@baz
+% --- END ATSIGN ---
+% \fi
+% \iffalse meta-comment
+% A preexisting meta-comment.
+% \fi
+%
+% ^^A Some funky comment
+% \def\filedate{2012/12/06}
+% \def\fileversion{v1.0}
+% \iffalse
+%<package>\NeedsTeXFormat{LaTeX2e}
+%<package>\ProvidesPackage{skiadoc}
+%<package>   [2012/06/06 Made skiadoc into a LaTeX package]
+%
+%<*driver>
+\documentclass{ltxdoc}
+
+\usepackage{verbatim}
+
+Junkety junk junk
+
+\begin{document}
+  \DocInput{skiadoc.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+\makeatletter
+\def\backslashy\\
+\bla@ga\bla\bla{}
+zart
+fort
+blech
+\makeatother
+% \Finale

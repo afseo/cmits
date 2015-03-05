@@ -1,0 +1,12 @@
+#!/bin/sh
+IFS="
+"
+for line in $(cat /etc/passwd); do
+    user=$(echo "$line" | cut -d: -f1)
+    shell=$(echo "$line" | cut -d: -f7)
+    if ! grep "^$shell\$" /etc/shells >&/dev/null; then
+        echo "User $user has invalid shell \"$shell\"; \
+changing to /sbin/nologin"
+        chsh -s /sbin/nologin "$user"
+    fi
+done

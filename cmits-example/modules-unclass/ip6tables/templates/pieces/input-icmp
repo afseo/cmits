@@ -1,0 +1,12 @@
+# ICMPv6 is a different animal from ICMPv4. Many more of its message types are
+# necessary and useful. It doesn't have a timestamp request message type like
+# ICMPv4 (the STIG requires ICMP timestamps to be blocked; see the iptables
+# module).
+# 
+# Allow loopback ICMP.
+-A INPUT -p icmpv6 -m ipv6header --soft ! --header frag -s ::1 -j ACCEPT
+# Allow ICMP within the enclave.
+-A INPUT -p icmpv6 -m ipv6header --soft ! --header frag -s <%=site-%> -j ACCEPT
+# Allow link-local ICMP. This encompasses router advertisements, multicast
+# listener reports, neighbor discovery, etc.
+-A INPUT -p icmpv6 -m ipv6header --soft ! --header frag -s fe80::/10 -j ACCEPT

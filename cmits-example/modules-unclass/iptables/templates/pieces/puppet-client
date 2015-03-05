@@ -1,0 +1,4 @@
+# Puppet client. We should tighten this up, but it's hard to know at this early
+# stage of Puppet deployment and use what our server will be.
+-A OUTPUT -p tcp --dport 8140 -j ACCEPT
+

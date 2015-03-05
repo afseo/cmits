@@ -1,0 +1,1 @@
+Contents of foo.aug

@@ -1,0 +1,28 @@
+<% # variables needed:
+   #     site: a CIDR block expressing the LAN this host will be on.
+-%>
+<%=scope.function_template "iptables/pieces/preamble"-%>
+<%=scope.function_template "iptables/pieces/loopback"-%>
+<%=scope.function_template "iptables/pieces/connected"-%>
+<%=scope.function_template "iptables/pieces/dns"-%>
+<%=scope.function_template "searde/iptables/pieces/puppet-client"-%>
+<%=scope.function_template "iptables/pieces/ssh-server"-%>
+<%=scope.function_template "iptables/pieces/ssh-client"-%>
+<%=scope.function_template "iptables/pieces/puppet-master"-%>
+<%=scope.function_template "iptables/pieces/centrify-client"-%>
+<%=scope.function_template "iptables/pieces/nfs-client"-%>
+<%=scope.function_template "iptables/pieces/dhcp-client"-%>
+<%=scope.function_template "iptables/pieces/ddns-client"-%>
+<%=scope.function_template "iptables/pieces/ntp-client"-%>
+<%=scope.function_template "iptables/pieces/ntp-server"-%>
+<%=scope.function_template "iptables/pieces/satellite-client"-%>
+<%=scope.function_template "searde/iptables/pieces/kace-client"-%>
+<%=scope.function_template "searde/iptables/pieces/smtp-client"-%>
+<%=scope.function_template "iptables/pieces/input-icmp"-%>
+<%=scope.function_template "iptables/pieces/output-icmp"-%>
+<%=scope.function_template "iptables/pieces/source-routed"-%>
+<%=scope.function_template "iptables/pieces/input-junk"-%>
+<%=scope.function_template "iptables/pieces/mdns"-%>
+<%=scope.function_template "iptables/pieces/fallthrough"-%>
+
+COMMIT

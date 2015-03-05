@@ -1,0 +1,3 @@
+# Removed: GEN003600, GEN003605, GEN003606: drop all source routed
+# packets; input, output and forwarding. See previous versions of this
+# file in Subversion.

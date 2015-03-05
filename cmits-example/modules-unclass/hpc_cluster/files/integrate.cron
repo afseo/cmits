@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -e
+
+# gather all system users and write in new passwd file
+getent passwd | (IFS='
+'; while read line; do
+    uid=$(echo "$line" | cut -d: -f3)
+    if [ $uid -le 1000 -o $uid -eq 65534 ]; then
+        echo $line;
+    fi; done) > /etc/passwd.new
+
+# now grab the non-system users
+cat /net/passwd/passwd >> /etc/passwd.new
+
+mv -f /etc/passwd.new /etc/passwd
+
+# same with system groups
+getent group | (IFS='
+'; while read line; do
+    gid=$(echo "$line" | cut -d: -f3)
+    if [ $gid -le 1000 -o $gid -eq 65534 ]; then
+        echo $line
+    fi; done) > /etc/group.new
+
+# non-system groups
+cat /net/passwd/group >> /etc/group.new
+
+mv -f /etc/group.new /etc/group

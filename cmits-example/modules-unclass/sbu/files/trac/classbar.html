@@ -1,0 +1,21 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      py:strip="">
+
+  <!--! Add security label style sheet -->
+  <head py:match="head" py:attrs="select('@*')">
+    ${select('*|comment()|text()')}
+    <link rel="stylesheet" type="text/css"
+          href="/styles/classbar.css" />
+  </head>
+
+  <body py:match="body" py:attrs="select('@*')">
+    <!--! Add security label header -->
+    <div id="siteheader">
+        <div class="unclassified classbar">
+            <span class="classtext">UNCLASSIFIED//FOUO</span>
+        </div>
+    </div>
+    ${select('*|text()')}
+  </body>
+</html>

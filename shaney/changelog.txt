@@ -1,0 +1,77 @@
+1.12
+----
+
+Fixed a thread safety problem in the Tkinter-based graphical build
+script, sourapples_tk.
+
+1.11
+----
+
+Attendant template files are now gathered and typeset, in the same way
+attendant files have been for a long time.
+
+1.10
+----
+
+Irregularities in STIGs are more kindly dealt with, e.g. badly-formed escaped
+XML inside a STIG, same STIG IDs appearing in multiple STIGs.
+
+1.9
+---
+
+Changed index creation to match iadoc 1.5, which makes one compliance index
+rather than one index for each requirements document.
+
+1.8
+---
+
+A hard dependency on pkg_resources remained after 1.4; it has been made
+optional. Added MiKTeX 2.9 binary directories as default LaTeX executable
+locations. Also, sourapples now searches the system PATH for LaTeX
+executables, after the directories specified in the sourapples config file.
+
+1.7
+---
+
+Every build is now preceded by a clean.
+
+1.6
+---
+
+Added some legalese at the top of every file.
+
+1.5
+---
+
+First tagged version. Some default config differences from 1.4.
+
+1.4
+---
+
+sourapples now uses the logging package; Tkinter-based windowed version added;
+dependency on Cheetah removed; dependency on pkg_resources made optional; bugs
+fixed.
+
+1.3
+---
+
+sourapples added, which unifies shaneyg and the three other Python scripts and
+eliminates the Makefile. Some files not properly included in the distribution.
+
+1.2
+---
+
+Work beginning on unifying the Python scripts and eliminating the Makefile, so
+that the unified policy document can be built on platforms where `make` is not
+handy.
+
+1.1
+---
+
+shaneyg script, run by a Makefile along with three other Python scripts to
+build the unified policy document.
+
+Before
+------
+
+Look at requirements.txt.

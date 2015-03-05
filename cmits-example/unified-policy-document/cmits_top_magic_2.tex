@@ -1,0 +1,35 @@
+
+% Make marginpars show up on the correct side of the page.
+\usepackage{mparhack}
+
+% Make the Bibliography a numbered chapter. In 1998, someone said you do
+% this by redefining the \thebibliography environment, at
+% http://groups.google.com/group/comp.text.tex/browse_thread/thread/b6e93d2f5e3a121a?hl=en
+% This redefinition is based on the definition in
+% /usr/share/texmf/tex/latex/base/book.cls from the
+% tetex-latex-3.0-33.13.el5 package.
+
+\makeatletter
+\renewenvironment{thebibliography}[1]
+     {\chapter{\bibname}% <<< star removed from this line
+      \label{Bibliography}% <<< this line added
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+
+

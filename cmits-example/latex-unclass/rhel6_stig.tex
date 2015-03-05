@@ -1,0 +1,44 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+
+\chapter{RHEL 6 STIG Compliance}
+\label{RHEL6STIGCompliance}
+
+This chapter has to do with the compliance of Linux machines controlled by
+this policy, and administrators performing the procedures written here,
+with the Red Hat Enterprise Linux 6 STIG \cite{rhel6-stig}.
+
+In the compliance index of this document you can find a section for the RHEL 6 STIG.
+All requirements directly and completely implemented by automated
+application of this policy are listed in that index as ``implemented.''
+In places where the SRG imposes
+policy demands on the actions of administrators, those demands are passed
+on in \S\ref{Procedures}. All other requirements are discussed in another
+section below.
+
+Where RHEL defaults to the correct behavior, but it is simple to write
+automated policy that will fix anything that is broken, we do that, in an
+attempt to ensure that RHEL 6 hosts are not only compliant at rollout, but
+remain compliant over time, and to ensure that noncompliance is rare
+enough to draw attention where it is warranted.
+
+
+
+
+
+
+\section{Requirements that RHEL implements by default}
+
+\input{org_rhel6_na}
+\input{org_rhel6_unmet}
+\input{org_rhel6_documented_with_iao}

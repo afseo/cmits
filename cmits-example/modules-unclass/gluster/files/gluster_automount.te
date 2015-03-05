@@ -1,0 +1,9 @@
+module gluster_automount 1.0.0;
+
+require {
+    type mount_t;
+    type automount_t;
+    class fifo_file { open };
+}
+
+allow mount_t automount_t:fifo_file open;

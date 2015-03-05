@@ -1,0 +1,13 @@
+#!/bin/sh
+# Warn about any unsigned packages installed on the system. These are
+# discernible because their %{sigpgp:pgpsig} is (none). gpg-pubkey packages,
+# being themselves public keys, are normally not signed; this is no cause for
+# concern, so filter them out. If there are no unsigned packages, there is no
+# output.
+rpm -qa --qf "Unsigned package found installed: \
+%{name} %{version}-%{release}.%{arch}, \
+signature %{sigpgp:pgpsig}, buildhost %{buildhost}\\n" | \
+    grep '(none)' | \
+<% @known_unsigned_packages.each do |pkg| %>    grep -v '<%=pkg-%>' | \
+<% end -%>
+    grep -v ': gpg-pubkey '

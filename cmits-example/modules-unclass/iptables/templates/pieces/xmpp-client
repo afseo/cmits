@@ -1,0 +1,1 @@
+-A OUTPUT -m tcp -p tcp --dport 5222 -j ACCEPT

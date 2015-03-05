@@ -1,0 +1,48 @@
+#!/bin/bash
+
+DOMAIN=eglin.hpc.mil
+EXPECTING_DATABASE=/var/spool/sign_expected/db
+
+usage () {
+    cat >&2 <<EOF
+Usage: expect_host hostname hostname2...
+       unexpect_host hostname hostname2...
+
+Expects the given hosts to submit Puppet CSRs; makes ready to turn those into
+certificates when they appear. Or, removes the expectation that those hosts
+will submit Puppet CSRs.
+
+Any unqualified hostnames will have the domain $DOMAIN added to them.
+
+EOF
+}
+
+if [ $# = 0 ]; then
+    usage
+    exit 1
+fi
+
+for hostname; do
+    if [[ $hostname != *.* ]]; then
+        hostname="$hostname.$DOMAIN"
+    fi
+    if [ $(basename $0) = unexpect_host ]; then
+	sqlite3 $EXPECTING_DATABASE "
+		DELETE FROM expecting_hosts
+		  WHERE hostname = '$hostname';"
+    else
+	if [ $(sqlite3 $EXPECTING_DATABASE "
+		  SELECT COUNT(*) FROM expecting_hosts
+		  WHERE hostname = '$hostname';") -gt 0 ]; then
+	    echo "$hostname is already expected; updating expectation time" >&2
+	    sqlite3 $EXPECTING_DATABASE "
+		  UPDATE expecting_hosts SET entered = '$(date +%s)'
+		  WHERE hostname = '$hostname';"
+	else
+	    sqlite3 $EXPECTING_DATABASE "
+		  INSERT 
+		  INTO expecting_hosts (entered, hostname)
+		  VALUES ('$(date +%s)', '$hostname');"
+	fi
+    fi
+done

@@ -1,0 +1,1114 @@
+% \iffalse meta-comment
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% \fi
+% \iffalse meta-comment
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+% \fi
+% \iffalse meta-comment
+%
+% Copyright and distribution license not yet determined.
+% Made in 2012 by Jared Jennings <jared.jennings.ctr@us.af.mil> at the (U.S.)
+% Air Force SEEK EAGLE Office.
+%
+% \fi
+%
+% ^^A We cannot \usepackage{iadoc}, because it pulls in multind.
+% ^^A Therefore we do not get \filedate and \fileversion for free.
+% \def\filedate{2013/02/01}
+% \def\fileversion{v1.5}
+% \iffalse
+%<package>\NeedsTeXFormat{LaTeX2e}
+%<package>\ProvidesPackage{iadoc}
+%<package>   [2012/12/17 Renamed from skiadoc to iadoc]
+%
+%<*driver>
+\documentclass{ltxdoc}
+
+\usepackage{verbatim}
+
+
+
+% Make PDF magic happen.
+% Thanks, Patrick Joeckel:
+% http://www.mpch-mainz.mpg.de/~joeckel/pdflatex/
+% Note that I expect always to use pdflatex, not latex+dvipdf
+\usepackage[bookmarks=true,bookmarksnumbered=true,breaklinks=true,pdftex]{hyperref}
+\hypersetup{
+    colorlinks=false,
+    linkbordercolor={0.7 0.7 1.0}
+}
+
+\EnableCrossrefs
+\RecordChanges
+\CodelineIndex
+
+\begin{document}
+  \DocInput{iadoc.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{0}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+% \changes{v1.0}{2011/07/18}{Renamed afseocmp to skiadoc}
+% \changes{v1.1}{2012/06/06}{Made skiadoc into a \LaTeX\ package}
+% \changes{v1.2}{2012/12/14}{Added support for other distribution statements
+% besides D; organization logo must now be provided by the document being
+% typeset}
+% \changes{v1.3}{2012/12/17}{Renamed skiadoc to iadoc}
+% \changes{v1.4}{2012/12/31}{Added indexing suppression macros}
+% \changes{v1.5}{2013/02/01}{Flattened all compliance indices into one}
+%
+% \GetFileInfo{iadoc.sty}
+%
+% \title{The \textsf{iadoc} package\thanks{This document corresponds to
+%   \textsf{iadoc}~\fileversion, dated~\filedate.}}
+% \author{Jared Jennings \\ \texttt{jared.jennings.ctr@us.af.mil}}
+%
+% \maketitle
+% \tableofcontents
+% \clearpage
+%
+%
+% \section{What iadoc is for}
+%
+% This package helps you construct documents that talk about compliance with
+% named requirements.
+%
+% For example, U.S. Department of Defense (DoD) Instruction (DoDI) 8500.2 sets
+% out the \emph{IA controls}, a set of 157 requirements for DoD information
+% systems. One such requirement regards the control of user accounts used for
+% authentication to a system; it's named ``Account Control'' and given an
+% identifier, IAAC-1. You may wish to write a document that says something
+% like, ``We comply with IAAC-1, and here's how.'' This package is made for
+% you.
+%
+% \section{Document identifiers}
+%
+% Your document may talk about compliance with named requirements from multiple
+% sources. For example, besides compliance with DoDI 8500.2 you might want to
+% also talk about compliance with the U.S. Defense Information Services Agency
+% (DISA) UNIX Operating System (OS) Security Requirements Guide (SRG). Now to
+% fully identify a requirement, you need to identify both the requirement and
+% the document it comes from, for example ``IA control IAAC-1,'' or ``UNIX SRG
+% Potential Discrepancy Item (PDI) GEN006480.''
+%
+% At the beginning of your document, you must identify all sources of named
+% requirements; then you can talk about those sources when you are identifying
+% the requirements. As examples here we use DoDI 8500.2, and assign it the
+% document identifier |iacontrol|; and we use the UNIX SRG, identifying it by
+% |unixsrg|. See~\S\ref{document_identifiers} for more.
+%
+%
+% \section{Macros used in the body of your document}
+%
+% When you use the macros below to indicate requirements levied by policies
+% handed down from above, or parts of code or documentation that relate to
+% those requirements, you get some style for free, and an entry in an index.
+% Also, other automated document features are made possible which are not
+% strictly based on \LaTeX ; for example, a Puppet manifest annotated using
+% \textsf{iadoc} may have a table of compliance which a script constructs
+% automatically by searching the manifest for uses of these macros.
+%
+% \subsection{Mentioning named requirements}
+%
+% Here are macros to use to indicate when you are talking about a specific
+% requirement. These tags do not indicate any compliance posture, just that
+% we're mentioning the requirement. So use these to refer to requirements in
+% passing. Just like the names of celebrities are sometimes set in bold type in
+% magazines, so that you can skip around and look for your favorite famous
+% person, we want to make it easy to find all mentions of a given named
+% requirement. 
+%
+% \begin{itemize}
+% \item
+% \DescribeMacro{\iacontrol}
+% |\iacontrol| \marg{control identifier}
+% \item
+% \DescribeMacro{\unixsrg}
+% |\unixsrg| \marg{PDI}
+% \end{itemize}
+%
+% The exact set of these macros depends on the set of requirements documents
+% named at the beginning of your document; see~\S\ref{document_identifiers}.
+%
+% Example:
+% \begin{verbatim}
+% Compliance with such and such requirement is similar to compliance with
+% \unixsrg{GEN002600}, \emph{q.v.}.
+% \end{verbatim}
+%
+%
+% \subsection{Making assertions about compliance posture}
+%
+% Most mentions of named requirements are going to be something like, ``We
+% comply with bla requirement,'' or ``We don't comply with this one, and here's
+% why.'' The following tags make it quick and simple for you to write such
+% assertions.
+%
+%
+% \DescribeMacro{\documents}
+% Use |\documents| for notating some text in your document that says a fact
+% about a system which supports a requirement. It takes two parameters: the
+% type of requirement, and the name of the requirement. Example:
+%
+% \begin{verbatim}
+% \documents{iacontrol}{DCMC-1} We use only JavaScript, which is Category I
+% mobile code.
+% \end{verbatim}
+%
+% Some requirements say something like, ``All \emph{mumble}s must be justified
+% and documented with the Information Assurance Officer (IAO).'' Use
+% |\documents| to assert either that those things are documented, right here,
+% or that you should look in \emph{bla} document to find that documentation.
+%
+% For example, the UNIX SRG requires that UNIX systems unable to require a
+% password to enter single-user mode must be documented with the IAO.
+%
+% \begin{verbatim}
+% \documented{unixsrg}{GEN000040} UNIX hosts unable to require a password
+% to enter single-user mode must be documented with the IAO. We administer
+% no such UNIX hosts.
+% \end{verbatim}
+% (This is written in a document which is produced under the IAO's purview
+% and approval; otherwise it would have to point to another document which is
+% ``with the IAO.'')
+%
+%
+% \DescribeMacro{\notapplicable}
+% Just before some discussion about why a requirement is not applicable in a
+% certain situation, put the |\notapplicable| tag. For example:
+%
+% \begin{verbatim}
+% \notapplicable{iacontrol}{DCMC-1} We do not use mobile code at all.
+% \end{verbatim}
+%
+% \DescribeMacro{\implements}
+% The |\implements| tag notates a section of code or documentation which
+% directly implements a requirement. It's usually used in automated policy. For
+% example, the UNIX SRG says under GEN001362, ``The \verb!/etc/resolv.conf!
+% file must be owned by root.'' A piece of Puppet policy that implements this
+% requirement may go like:
+%
+% \begin{verbatim}
+% # \implements{unixsrg}{GEN001362} Make sure resolv.conf 
+% # is owned by root.
+%     file { '/etc/resolv.conf':
+%         owner => root,
+%     }
+% \end{verbatim}
+%
+%
+% \DescribeMacro{\doneby}
+% The |\doneby| tag is for requirements that are not fulfilled in an automated
+% fashion: people are responsible for carrying them out on a day-by-day basis.
+% It takes three parameters: who exactly does this thing, the kind of
+% requirement, and the requirement's name. For example, the RHEL5 STIG requires
+% that SELinux be turned on when installing RHEL5. Administrators have to make
+% sure it's enabled during the install process.
+%
+% \begin{verbatim}
+% \doneby{admins}{rhel5stig}{GEN000000-LNX00800} Make sure SELinux is enabled
+% when installing RHEL5.
+% \end{verbatim}
+%
+% \DescribeMacro{\bydefault}
+% Use the |\bydefault| tag to talk about how a product we use implements a
+% given requirement in its default configuration. It takes three parameters:
+% the product we're talking about, the kind of requirement, and the
+% requirement's name.---For example, the UNIX SRG says under GEN001300 that all
+% library files must have mode \verb!0755! or less permissive. Both RHEL 5 and
+% RHEL 6 systems have this property by default.
+%
+% \begin{verbatim}
+% \bydefault{RHEL5, RHEL6}{unixsrg}{GEN001300} All library files under RHEL
+% are mode \verb!0755! or less permissive by default.
+% \end{verbatim}
+%
+%
+% \DescribeMacro{\unimplemented}
+% Use the |\unimplemented| tag to talk about a requirement we need to fulfill
+% but haven't yet. (Don't use |\unimplemented| to talk about a requirement
+% we don't intend ever to fulfill: it turns some things red to bring our
+% attention to them; we don't want false alarms.)
+%
+% Note carefully that this tag has three parameters: the kind of
+% requirement, the exact requirement, and \emph{the reason} the requirement
+% is unimplemented. You can't use \verb!\verb! in the reason. Stick with plain
+% text.
+%
+% \begin{verbatim}
+% \unimplemented{unixsrg}{GEN008380}{Unless root kit checking functionality
+% is provided by the virus scanner, we would likely want to deploy
+% {\tt chkrootkit}. But this software is not yet approved...}
+% \end{verbatim}
+%
+%
+%
+%
+% \section{Security labels}
+%
+% Some regulations require that documents be marked and labelled. These
+% tags help you do that.
+%
+% \DescribeMacro{\articlesecuritylabel}
+% When you are writing an article (|\documentclass{article}|), this tag helps
+% you label it. It will put the text you give at the top of every page. Put
+% the tag right after |\usepackage{iadoc}|, as close to the top of the
+% document source as possible. That way it will be visible to viewers of the
+% document source as well.
+%
+% Most reStructuredText documents use the article class.
+%
+% Example, in \LaTeX :
+% \begin{verbatim}
+% \articlesecuritylabel{UNCLASSIFIED//FOUO}
+% \end{verbatim}
+%
+% \DescribeMacro{\booksecuritylabel}
+% |\booksecuritylabel| acts the same as |\articlesecuritylabel|, but this is
+% the one you should use if you are using the |book| document class.
+%
+% Part of marking a document properly is writing the distribution statement and
+% statement of disposition on the title page.
+%
+% See \url{http://www.dtic.mil/dtic/submit/guidance/distribstatement.html} on
+% distribution statements and on destruction of limited-distribution
+% unclassified documents.
+%
+% \section{Distribution statements}
+%
+% Write the distribution statement right after the security label. Statements
+% allowed by DoDI 5320.24 as of 23 August 2012 are A through F. Macros for
+% these are provided. Dates are set to |\today|. For guidance on the reasons,
+% see the DoD instruction.
+%
+% Just like you need |\maketitle| to make your |\title| show up, you need to
+% use |\makedodtitle| to make your distribution statement show up.
+%
+% \DescribeMacro{\distributionA}
+% To mark your document with Distro A (public release), write |\distributionA|
+% \marg{other information}. Local policies may require that you include a
+% reference number, or the name of the organization which cleared the document,
+% or some such. That's ``other information.''
+%
+% \DescribeMacro{\distributionB}
+% To U.S. Government agencies only: |\distributionB| \marg{reason why}
+% \marg{controlling office}.
+%
+% \DescribeMacro{\distributionC}
+% To U.S. Government agencies and their contractors: |\distributionC| \marg{reason
+% why} \marg{controlling office}.
+%
+% \DescribeMacro{\distributionD}
+% To DoD and DoD contractors only: |\distributionD| \marg{reason why}
+% \marg{controlling office}. 
+%
+% \DescribeMacro{\distributionE}
+% To DoD Components only: |\distributionE| \marg{reason why} \marg{controlling
+% office}.
+%
+% \DescribeMacro{\distributionF}
+% Only as directed by the controlling office or higher DoD authority:
+% |\distributionF| \marg{controlling office}.
+%
+% You are responsible for understanding what these statements mean and whether
+% you're allowed to use them.
+%
+%
+% \section{Document formatting aids}
+%
+% \DescribeMacro{\makedodtitle} In a book-class document, use
+% |\makedodtitle| instead of \verb!\maketitle!  and you will get an
+% organization logo on your title page. You'll also get the distribution
+% statement. You must provide the organization logo, as a graphics file of a
+% suitable format (\emph{e.g.}, PNG or PDF if you're using \verb!pdflatex!, EPS
+% if you're using \verb!latex!, that sort of thing), entitled \verb!org_logo!,
+% \emph{e.g.} \verb!org_logo.png!.
+%
+% \DescribeMacro{\narrowermargins}
+% In the top of your document, put |\narrowermargins| to make all of the
+% margins narrower by a half inch, increasing the text area by one inch
+% horizontally and one inch vertically.  You have to put it above the security
+% label.
+%
+% This has not been tested much, and only on a book-class document.
+%
+% Write a changelog and call it \verb!changelog.tex!. Include it in your
+% front matter just after the table of contents. Its format is like so:
+%
+% \begin{verbatim}
+% \begin{changelog}
+%
+% \change{3 Aug 2011}{Jared Jennings}{Added Backup Plan}
+%
+% \change{2 Aug 2011}{Jared Jennings}{New server purchased; changed Hardware
+% Baseline to match}
+%
+% \end{changelog}
+% \end{verbatim}
+%
+% Add new entries to the top of the changelog, not the bottom.
+%
+% An ``executive summary'' is supported. This is just a section containing a
+% table which lays out the IA controls documented. Its format is like so:
+%
+% \begin{verbatim}
+% \begin{executivesummary}
+% \executivesummaryiacontrol{IAIA-1}{Individual Authentication}
+% \end{executivesummary}
+% \end{verbatim}
+%
+% Put it after the changelog, after the ToC.
+%
+%
+% \section{Document identifiers}
+% \label{document_identifiers}
+%
+% Each named requirement is defined in the context of a document, which perhaps
+% some organization above has handed down as policy. To identify the
+% requirement unambiguously, you need both the requirement identifier and a way
+% to identify the document. Here are some suggested identifiers:
+%
+% \begin{description}
+% \item[iacontrol] Information Assurance Controls, laid out in DoDI
+% 8500.2, e.g. DCMC-1.
+% \item[unixsrg] UNIX Security Requirements Guide (SRG) Potential
+% Discrepancy Identifiers (PDIs), e.g. GEN008520. (The UNIX SRG was
+% previously known as the UNIX Security Technical Implementation Guide
+% [STIG].)
+% \item[apachestig] Apache 2.2 STIG PDIs. These can be either from the
+% Apache 2.2 Server STIG or the Apache 2.2 Site STIG.
+% \item[spanstig] Sharing Peripherals Across the Network (SPAN) STIG
+% PDIs. (This STIG has been split out into several parts, and \verb!iadoc!
+% and its depending documents need to change accordingly.)
+% \item[rhel5stig] Red Hat Enterprise Linux (RHEL) 5 STIG PDIs.
+% \item[databasestig] Generic Database STIG PDIs.
+% \end{description}
+%
+% These identifiers are written in every compliance tag, and they are also used
+% as index names.
+%
+% \subsection{Defining requirements documents}
+%
+% In the preamble of your document, you must tell \textsf{iadoc} from which
+% documents your requirements will come. \DescribeMacro{\requirementsdocument}
+% Use the |\requirementsdocument| macro to do this. For example,
+%
+% \begin{verbatim}
+% \requirementsdocument{joesaidso}{Joe's Demands}{Demand }
+% \end{verbatim}
+%
+% The first parameter is the document identifier, which is used in the
+% compliance tags. For example, after this |\requirementsdocument|, in the body
+% of our document we could write
+%
+% \begin{verbatim}
+% \documents{joesaidso}{Joe34} We close the door when going outside, because
+% Joe said to. Door-closing logs are kept by the door.
+% \end{verbatim}
+%
+% The second parameter is the header under which all requirements from this
+% document will be placed in the Compliance index. Given the above code, the
+% index might look like:
+%
+% \begin{verbatim}
+% Compliance
+%
+%  Joe's Demands
+%    Joe34
+%      documented, 3
+% \end{verbatim}
+%
+% The third parameter is the prefix with which requirements from this document
+% will be named. For example, if we were to write |\joesaidso{Joe34}| in the
+% body of a document, we would see ``Demand Joe34'' in the rendering of that
+% document.
+%
+%
+% \section{Adding {\tt iadoc} to a document}
+%
+% If you are editing or adding to an existing document which already uses
+% iadoc, you need not concern yourself with this section.
+%
+% To use iadoc in a new document: you should have the iadoc package
+% installed; see
+% \url{http://en.wikibooks.org/wiki/LaTeX/Packages/Installing_Extra_Packages}. 
+%
+% At the top of your document, in its preamble, put the following lines:
+%
+% \begin{verbatim}
+% \usepackage{iadoc}
+% \end{verbatim}
+%
+% This makes the indices that the iadoc tags put entries into. Make sure
+% that if your document uses the hyperref package, that it does so before
+% using the iadoc package.
+%
+% Somewhere in the preamble of your document, after you use the \textsf{iadoc}
+% package, tell \textsf{iadoc} about all your |\requirementsdocument|s.
+%
+% If you want the IA controls covered in a section to be summarized in the
+% section's title written in the table of contents, use this additional
+% package:
+%
+% \begin{verbatim}
+% \usepackage{iacic}
+% \end{verbatim}
+%
+% Write this after the usepackage directive for iadoc. If you use the
+% hyperref package, write this statement after the usepackage directive for
+% hyperref.
+%
+% If you use iacic, your section titles cannot contain any formatting, and your
+% document cannot be originally written in reStructuredText. Section titles
+% written in the body text will not change: only the ones in the contents.
+% Section titles written in page headers will vary. In general this is a buggy,
+% wonky feature.  See \url{http://tex.stackexchange.com/questions/29818}. Dive
+% into the wonderful world of \TeX\ and \LaTeX . Learn you a fix for great
+% good!
+%
+% In any case, somewhere at the end of your document, put
+%
+% \begin{verbatim}
+% \printindex{compliance}{Compliance}
+% \end{verbatim}
+%
+% This grabs the index made and makes it part of the final document.
+%
+% \subsection{Temporarily suppressing index entries}
+%
+% If some part of your document is an auto-summary of another part of your
+% document, to index mentions of requirements in the summarized part may be
+% redundant and undesirable.
+%
+% \DescribeMacro{\Iaindexingenabledfalse}
+%
+% \DescribeMacro{\Iaindexingenabledtrue}
+%
+% Use these macros to turn off and on (respectively) indexing of compliance
+% assertions for part of your document. For example:
+%
+% \begin{verbatim}
+% \Iaindexingenabledfalse
+% \include{auto_summary}
+% \Iaindexingenabledtrue
+% \end{verbatim}
+%
+%
+% \section{Constraints}
+%
+% Because \textsf{iadoc} requires \textsf{longtable}, you can't use two
+% columns in a document that uses \textsf{iadoc}. The requirement for
+% longtable stems from the executive summary and changelog, which may have
+% enough rows to span pages.
+%
+% Because \textsf{iadoc} requires \textsf{multind}, any other package which
+% automatically indexes things may not work in conjunction with
+% \textsf{iadoc}.
+%
+%
+%
+%
+% \section{Implementation}
+%
+% \StopEventually{}
+%    \begin{macrocode}
+\makeatletter
+%    \end{macrocode}
+% We require longtable for the changelog and executive summary, which could span pages.
+%    \begin{macrocode}
+\RequirePackage{longtable}
+%    \end{macrocode}
+% We require color so that we can make red some text regarding unimplemented
+% requirements.
+%    \begin{macrocode}
+\RequirePackage{color}
+%    \end{macrocode}
+% There are potentially hundreds of requirements with which to comply. So we
+% want them in their own index.
+%    \begin{macrocode}
+\RequirePackage{multind}
+%    \end{macrocode}
+% The \textsf{fancyhdr} package is how we add security labels.
+%    \begin{macrocode}
+\RequirePackage{fancyhdr}
+%    \end{macrocode}
+% And the graphicx package is needed so the organization's logo can be put on
+% the front page.
+%    \begin{macrocode}
+\RequirePackage{graphicx}
+
+%    \end{macrocode}
+% Index entries are written into the compliance index.
+%    \begin{macrocode}
+\makeindex{compliance}
+%    \end{macrocode}
+% Notations of compliance throughout the document are written in compliance.aux
+% and explanations.aux.
+%    \begin{macrocode}
+\AtBeginDocument{
+\newwrite\complianceaux
+\immediate\openout\complianceaux=compliance.aux
+\newwrite\explanationsaux
+\immediate\openout\explanationsaux=explanations.aux
+}
+
+\AtEndDocument{
+\immediate\closeout\complianceaux
+\immediate\closeout\explanationsaux
+}
+%    \end{macrocode}
+
+% The foreach code below is from:
+% \url{http://stackoverflow.com/questions/2402354/split-comma-separated-parameters-in-latex}
+% and/or \url{http://maraist.org/comma-separated-lists-in-latex_08-2009/}.
+% Added two extra pass-through parameters.
+%
+% \begin{macro}{\foreach}
+% Functional foreach construct.
+% Usage: |\foreach| \marg{macro} \marg{firstarg} \marg{secondarg}
+% \marg{third1,third2,third3,...}.  Evaluates to
+% |\macro{firstarg}{secondarg}{third1}| |\macro{firstarg}{secondarg}{third2}|
+% etc.
+%
+% Put another way: \meta{\#1} is a function to call once for each
+% comma-separated item in \meta{\#4}. \meta{\#2} and \meta{\#3} are parameters to
+% pass to function in \meta{\#1} as the first parameters.  \meta{\#4} is a
+% comma-separated list of items, each of which to pass as the second parameter
+% to an invocation of function \meta{\#1}.
+%    \begin{macrocode}
+\def\foreach#1#2#3#4{%
+  \@test@foreach{#1}{#2}{#3}#4,\@end@token%
+}
+%    \end{macrocode}
+% \end{macro}
+
+% Internal helper function - Eats one input
+%    \begin{macrocode}
+\def\@swallow#1{}
+%    \end{macrocode}
+
+% Internal helper function - Checks the next character after \#1 and \#2 and
+% continues loop iteration if |\@end@token| is not found 
+%    \begin{macrocode}
+\def\@test@foreach#1#2#3{%
+  \@ifnextchar\@end@token%
+    {\@swallow}%
+    {\@foreach{#1}{#2}{#3}}%
+}
+%    \end{macrocode}
+
+% Internal helper function - Calls |#1{#2}{#3}{#4}| and recurses
+% The magic of splitting the third parameter occurs in the pattern matching of
+% the |\def|
+%    \begin{macrocode}
+\def\@foreach#1#2#3#4,#5\@end@token{%
+  #1{#2}{#3}{#4}%
+  \@test@foreach{#1}{#2}{#3}#5\@end@token%
+}
+%    \end{macrocode}
+
+
+% \begin{macro}{\requirementsdocument}
+% Usage: |\requirementsdocument| \marg{tag} \marg{index heading}
+% \marg{requirement title}. The tag is a one-word lowercase name, like
+% iacontrol or unixsrg or rhel5stig, that you'll use in |\implements| and other
+% tags to say from which document comes the requirement you're talking about.
+% An index of compliance will be made; |index title| is the title under which
+% all compliance with this document will be listed in the compliance index, for
+% example ``DoDI 8500.2 IA Controls.'' The |requirement title| is how to name a
+% requirement from that document. For example, the DISA UNIX SRG contains many
+% requirements, called Potential Discrepancy Items (PDI). So you may give
+% ``UNIX SRG PDI '' (note the space at the end) as the requirement title, and
+% when a requirement is named using |\requirement| it will be prefixed with the
+% title, e.g. ``UNIX SRG PDI GEN006480.''
+% 
+% Write all |\requirementsdocument|s in the preamble of the document.
+%
+%    \begin{macrocode}
+\newcommand{\requirementsdocument}[3]{%
+    % Say how to name requirements that come from this document.
+    \expandafter\providecommand\csname #1\endcsname[1]{%
+        \namedrequirement{#1}{#3}{##1}}
+    \expandafter\newcommand\csname indexhead@#1\endcsname{#2}
+}
+%    \end{macrocode}
+% \end{macro}
+
+% \begin{macro}{\requirement}
+% Usage: |\requirement| \marg{document tag} \marg{requirement name}. Example:
+% |\requirement{unixsrg}{GEN006480}|. Use this macro to mention requirements
+% that come from other documents, without implying a particular compliance
+% posture. For example, ``The check content of
+% |\requirement{unixsrg}{GEN006480}| suggests the following solution.''
+%    \begin{macrocode}
+\newcommand{\requirement}[2]{%
+    \expandafter\csname requirement@#1\endcsname{#2}}
+%    \end{macrocode}
+% \end{macro}
+    
+% \begin{macro}{\printrequirementsindex}
+% Usage: |\printrequirementsindex| \marg{tag} \marg{index title}.
+% |tag| must be a tag given as an argument to |\requirementsdocument| above.
+% |index title| is the title for the index.
+%    \begin{macrocode}
+\newcommand\printrequirementsindex[2]{%
+\cleardoublepage
+\phantomsection
+\label{index_#1}
+\printindex{#1}{#2}
+}
+%    \end{macrocode}
+% \end{macro}
+
+% \begin{macro}{\namedrequirement}
+% Usage: |\namedrequirement| \marg{index name} \marg{official title prefix} \marg{requirement name}.
+% Example: |\namedrequirement{iacontrol}{IA Control }{IAAC-1}| will say ``IA
+% Control IAAC-1'' in the body of the document, and make an index entry in the
+% index called iacontrol.
+%
+% This macro exists so it will be possible to redefine it to change how such a
+% thing looks. When referring to a named requirement in a document that you are
+% writing, use |\requirement| above, not this macro.
+%    \begin{macrocode}
+\newcommand{\namedrequirement}[3]{%
+    \index{#1}{{#3}!}%
+    {\small #2\mbox{#3}}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% This will be redefined by \textsl{iacic} if that package is included.
+%    \begin{macrocode}
+\def\addtosectionname#1{}
+%    \end{macrocode}
+
+
+%    \begin{macrocode}
+\newif\ifIaindexingenabled
+% default to true
+\Iaindexingenabledtrue
+%    \end{macrocode}
+% Style the text for per-document heads in the compliance index.
+%    \begin{macrocode}
+\newcommand{\iaindexheadstyle}[1]{%
+    \vspace{1em}{\large \textbf{#1}}\vspace{1em}}
+%    \end{macrocode}
+% parameters: index name, implementation status, requirement name
+%    \begin{macrocode}
+\newcommand{\indexhelper}[3]{%
+\ifIaindexingenabled\index{compliance}{\csname indexhead@#1\endcsname @\iaindexheadstyle{\csname indexhead@#1\endcsname}!{#3}!{#2}}\fi}
+%    \end{macrocode}
+% parameters: index name, prefix (e.g. {RHEL5: }), requirement name
+%    \begin{macrocode}
+\newcommand{\marginhelper}[3]{#2~\mbox{#3}\\ }
+%    \end{macrocode}
+% parameters: index name, compliance status, requirement name
+% compliance status is not necessarily the same as implementation status
+%    \begin{macrocode}
+\newcommand{\compliancehelper}[3]{%
+\write\complianceaux{#1:#3:#2}}
+% parameters: index name, explanation, requirement name
+\newcommand{\explanationshelper}[3]{%
+\write\explanationsaux{#1:#3:}%
+\write\explanationsaux{#2}%
+\write\explanationsaux{:}%
+}
+%    \end{macrocode}
+
+% parameters: index name, nothing, requirement name
+%    \begin{macrocode}
+\newcommand{\sectionnamehelper}[3]{%
+    \def\@numberone{#1}%
+    \def\@iacontrol{iacontrol}%
+    \ifx\@numberone\@iacontrol\addtosectionname{#3}\fi}
+%    \end{macrocode}
+%
+%
+% These all take two parameters.
+% The first parameter is the identifier of the document from which the
+% requirement comes (e.g. iacontrol, unixstig, spanstig, apachestig,
+% etc)---same names as the indices. The second parameter is which
+% requirement(s) is/are in the given status (e.g. GEN000320). You may supply
+% multiple values for this one, separated by commas.
+%
+% Example: |\implements{unixsrg}{GEN000320,GEN000340}|
+%
+%    \begin{macrocode}
+\def\iamarginsize{\footnotesize}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\implements}[2]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#1}{implemented}{#2}%
+    \marginpar{\iamarginsize \raggedright%
+        \foreach{\marginhelper}{#1}{auto:}{#2}%
+    }%
+    \foreach{\compliancehelper}{#1}{compliant}{#2}%
+    \foreach{\sectionnamehelper}{#1}{}{#2}%
+    \@esphack}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\unimplemented}[3]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#1}{\textcolor{red}{unimplemented}}{#2}%
+    \marginpar{\iamarginsize \color{red} \raggedright%
+        \foreach{\marginhelper}{#1}{}{#2}%
+    }%
+    \foreach{\compliancehelper}{#1}{non-compliant}{#2}%
+    \foreach{\explanationshelper}{#1}{#3}{#2}%
+    \foreach{\sectionnamehelper}{#1}{}{#2}%
+    {#3}%
+    \@esphack}
+%    \end{macrocode}
+
+% parameters: OSes, type of requirement, requirement(s)
+%    \begin{macrocode}
+\newcommand{\bydefault}[3]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#2}{default for {#1}}{#3}%
+    \marginpar{\iamarginsize \raggedright%
+        \foreach{\marginhelper}{#2}{#1: }{#3}%
+    }%
+    \foreach{\compliancehelper}{#2}{compliant}{#3}%
+    \foreach{\sectionnamehelper}{#1}{}{#2}%
+    \@esphack}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\notapplicable}[2]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#1}{N/A}{#2}%
+    \marginpar{\iamarginsize \raggedright%
+        \foreach{\marginhelper}{#1}{N/A: }{#2}%
+    }%
+    \foreach{\compliancehelper}{#1}{N/A}{#2}%
+    \@esphack}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\doneby}[3]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#2}{prescribed}{#3}%
+    \marginpar{\iamarginsize \raggedright%
+        \foreach{\marginhelper}{#2}{#1 do }{#3}%
+    }%
+    \foreach{\compliancehelper}{#2}{compliant}{#3}%
+    \foreach{\sectionnamehelper}{#1}{}{#2}%
+    \@esphack}
+%    \end{macrocode}
+
+% deprecated
+%    \begin{macrocode}
+\newcommand{\prescribed}[2]{\doneby{admins}{#1}{#2}}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\documented}[2]{%
+    \@bsphack
+    \hspace{0pt}% this makes sure the marginpar doesn't go with the previous
+                % paragraph
+    \foreach{\indexhelper}{#1}{documented}{#2}%
+    \marginpar{\iamarginsize \raggedright%
+        \foreach{\marginhelper}{#1}{}{#2}%
+    }%
+    \foreach{\compliancehelper}{#1}{compliant}{#2}%
+    \foreach{\sectionnamehelper}{#1}{}{#2}%
+    \@esphack}
+%    \end{macrocode}
+
+%    \begin{macrocode}
+\newcommand{\documents}[2]{\documented{#1}{#2}}
+%    \end{macrocode}
+
+
+% \begin{macro}{\articlesecuritylabel}
+% Use this to label documents of class \textsl{article}.
+% Use like |\articlesecuritylabel| \marg{thing to write on each page}.
+% The thing will be written as part of the page header.
+%    \begin{macrocode}
+\newcommand{\articlesecuritylabel}[1]{%
+    \pagestyle{fancy}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyhf{}%
+    \chead{#1}%
+    \cfoot{\thepage}%
+    \fancypagestyle{plain}{%
+        \fancyhf{}%
+        \fancyhead[C]{#1}%
+    }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\booksecuritylabel}
+% Use this one to label books. Syntax is the same as above.
+%    \begin{macrocode}
+\newcommand{\booksecuritylabel}[1]{%
+    \pagestyle{fancy}%
+    \renewcommand{\headrulewidth}{0.1pt}%
+    \fancyhf{}%
+    \fancyhead[CE,CO]{#1\vspace{2\baselineskip}}%
+    \fancyhead[LE,RO]{\thepage}%
+    \fancyhead[RE]{\nouppercase{\leftmark}}%
+    \fancyhead[LO]{\nouppercase{\rightmark}}%
+    %
+    \fancypagestyle{empty}{%
+        \renewcommand{\headrulewidth}{0pt}%
+        \fancyhf{}%
+        \fancyhead[C]{#1\vspace{2\baselineskip}}%
+    }%
+    \fancypagestyle{plain}{%
+        \renewcommand{\headrulewidth}{0pt}%
+        \fancyhf{}%
+        \fancyhead[C]{#1\vspace{2\baselineskip}}%
+    \fancyfoot[C]{\thepage}%
+    }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% See \url{http://www.dtic.mil/dtic/submit/guidance/distribstatement.html} on
+% distribution statements and on destruction of limited-distribution
+% unclassified documents.
+%
+%    \begin{macrocode} 
+\def\@distribution{\@latex@warning@no@line{No distribution statement given}}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\@destruction{%
+    \textbf{DESTRUCTION NOTICE}: Destroy by any method that will prevent disclosure or reconstruction of the document.}
+%    \end{macrocode}
+%
+% \begin{macro}{\distributionA}
+%    \begin{macrocode}
+\def\distributionA#1{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT A}: Approved for public release. #1}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\distributionB}
+%    \begin{macrocode}
+\def\distributionB#1#2{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT B}: Distribution authorized to U.S. Government agencies only #1 \@date. Other requests for this document shall be referred to #2.}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\distributionC}
+%    \begin{macrocode}
+\def\distributionC#1#2{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT C}: Distribution authorized to U.S. Government agencies and their contractors #1 \@date. Other requests for this document shall be referred to #2.}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\distributionD}
+% Use this macro to indicate that your document uses Distribution Statement D,
+% and why, like so: |\distributionD| \marg{reason why distribution is limited}.
+% Write this in the top of your document, before |\begin{document}|.
+%    \begin{macrocode}
+\def\distributionD#1#2{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT D}: Distribution authorized to the Department of Defense and U.S. DoD contractors only #1 \@date. Other requests shall be referred to #2.}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\distributionE}
+%    \begin{macrocode}
+\def\distributionE#1#2{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT E}: Distribution authorized to DoD Components only #1 \@date. Other requests shall be referred to #2.}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\distributionF}
+%    \begin{macrocode}
+\def\distributionF#1{%
+    \gdef\@distribution{%
+        \textbf{DISTRIBUTION STATEMENT F}: Further dissemination only as directed by #1 \@date\ or higher DoD authority.}}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% FIXME: other distribution statements are not yet supported. Patches
+% gratefully accepted.
+%
+%
+% Most documents submitted in support of information assurance (IA) goals must
+% indicate what version they are, and what changes have happened between
+% versions. In software development terminology, these correspond to
+% \emph{releases}, not \emph{revisions} or \emph{changesets}; that is to say,
+% these versions are likely not to change more than once a month, and changes
+% are likely to be, ``Added a new chapter about foo,'' rather than ``Corrected
+% spelling on page 358.''
+
+%    \begin{macrocode}
+\def\@version{}
+%    \end{macrocode}
+
+% \begin{macro}{\version}
+% Use the |\version| \marg{some indication of version} to indicate the version
+% of the document.
+%    \begin{macrocode}
+\def\version#1{\gdef\@version{#1}}
+%    \end{macrocode}
+% \end{macro}
+
+% \begin{macro}{\today}
+% This redefinition of the |\today| macro formats the date like ``4 Oct 2011,''
+% as military folks are used to. Use it in the |\date| macro.
+%    \begin{macrocode}
+\def\today{\number\day\space\ifcase\month\or Jan\or Feb\or Mar\or Apr\or 
+  May\or Jun\or Jul\or Aug\or Sep\or Oct\or Nov\or Dec\fi
+  \space\number\year}
+%    \end{macrocode}
+% \end{macro}
+
+% \begin{macro}{\narrowermargins}
+% Nobody appreciates the rules of typography these days. And making a bad
+% impression on auditors by submitting a document that doesn't look how they
+% expect is a needless risk.
+%
+% This macro narrows the margins, while leaving a sizable margin in which to
+% write text. It probably only works on books (not articles). It takes the
+% security label into account.
+%    \begin{macrocode}
+\newcommand{\narrowermargins}{%
+    \addtolength{\hoffset}{-0.5in}%
+    \addtolength{\textwidth}{1in}%
+    \addtolength{\marginparwidth}{-0.5in}%
+    \addtolength{\voffset}{-0.5in}%
+    \addtolength{\textheight}{1in}%
+    % bring up bottom of text to match whitespace at top caused by security
+    % label
+    \addtolength{\textheight}{-2\baselineskip}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\makedodtitle}
+% Use this macro instead of |\maketitle|, right after |\begin{document}|.
+%    \begin{macrocode}
+\newcommand{\makedodtitle}[0]{%
+    \begin{titlepage}%
+    \begin{center}%
+    ~\vskip 1.5in%
+    {\LARGE \@title \par}%
+    \vskip 3em%
+    {\large \lineskip .75em \begin{tabular}[t]{c}%
+      \@author%
+     \end{tabular}\par}%
+    {\large \@date \par \large \@version}\vskip 0.5in%
+    \includegraphics[width=0.4\textwidth]{org_logo}
+    \end{center}\par%
+    \@thanks\vskip 0.5in\par%
+    \@distribution\par%
+    \@destruction%
+    \vfil\null
+    \end{titlepage}}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{environment}{changelog}
+% \begin{macro}{\change}
+% Usage: |\change| \marg{when} \marg{who} \marg{what}. For example,
+% \begin{verbatim}
+% \change{3 Aug 2011}{Jared Jennings}{Added backup plan}
+% \end{verbatim}
+%
+%    \begin{macrocode}
+\newcommand{\change}[3]{%
+    {#1} & {#2} & {#3}\\
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\newenvironment{changelog}{
+    \phantomsection
+    \chapter*{Changelog}
+    \addcontentsline{toc}{chapter}{Changelog}
+    \begin{longtable}{@{\extracolsep{\fill}} l l p{4in}}
+    \hline
+    {\bf Date} & {\bf Person} & {\bf Change Description}\\
+    \hline\hline
+    \endhead
+}{\end{longtable}}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{environment}{executivesummary}
+% An ``executive summary,'' in the context of documents submitted as
+% information assurance artifacts, means specifically a table of IA controls to
+% which this document applies. Executive summaries can be built automatically
+% by the shaney script, but must be included in the main document by means of
+% the |\include| command.
+%
+% \begin{macro}{\executivesummaryiacontrol}
+% Usage: |\executivesummaryiacontrol| \marg{IA control ID} \marg{IA control
+% name}. Use only inside the executivesummary environment.
+%    \begin{macrocode}
+\newcommand{\executivesummaryiacontrol}[2]{%
+    {#1} & {#2}\\
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\newenvironment{executivesummary}{
+    \phantomsection
+    \chapter*{Executive Summary}
+    \addcontentsline{toc}{chapter}{Executive Summary}
+    The following table lists the DoDI 8500.2 IA Controls that are satisfied
+    through this artifact.
+
+    \begin{longtable}{@{\extracolsep{\fill}} l p{4in}}
+    \hline
+    {\bf IA Control Number} & {\bf IA Control Name}\\
+    \hline\hline
+    \endhead
+}{\end{longtable}}
+%    \end{macrocode}
+% \end{environment}
+
+\makeatother
+
+% \Finale

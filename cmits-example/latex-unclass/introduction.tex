@@ -1,0 +1,105 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Introduction}
+\label{Introduction}
+
+This document is a record of how a number of computers are configured and
+maintained. 
+
+Many of the elements of this policy are motivated by requirements in
+higher-level policies, such as Department of Defense (DoD) Instruction
+8500.2 Information Assurance (IA) Controls \cite{dodi-8500-2}, the Defense
+Information Services Agency's (DISA) UNIX Security Requirements Guide
+(SRG, \cite{unix-srg}), or various Air Force Instructions (AFIs).
+\S\S\ref{iac-compliance-summary}, \ref{UNIXSRGCompliance},
+\ref{SPANSTIGCompliance} and~\ref{DatabaseSTIGCompliance} show how we meet
+those requirements.
+
+Under this policy, \emph{hosts} (individual computers, real or virtual)
+are configured using \emph{Puppet}, an automated, policy-based
+system configuration tool.  \S\S\ref{Contingency}~and~\ref{Production}
+discuss how administrators can follow this policy to configure systems
+manually in a contingency situation, or set Puppet in place to enforce the
+policy automatically, as is usual in production.
+
+The same documents that impose requirements on system configuration also
+impose requirements on system administrators and users, about what to do
+and how to do it. \S\ref{ProceduresForUsers} initiates users in their
+responsibilities, and \S\ref{Procedures} discusses day-to-day tasks done
+by administrators.
+
+\S\S\ref{Maintenance}~and~\ref{Packaging} discuss how to maintain the
+policy and this document, and how properly to automate the installation
+and removal of software.
+
+Finally, the policy (\S\ref{Policy}) and its attendant files
+(\S\ref{AttendantFiles}) follow in all their detail.
+
+
+\section{Typographical conventions}
+
+Much of this document has to do with compliance. Near any statement of
+status regarding compliance there is a margin note with the name of the
+specific requirement. For example, in~\S\ref{class_ssh::fips}, there is
+Puppet code which configures hosts for compliance with
+\unixsrg{GEN000590}. Just before that code is a comment explaining what
+the code does and how that complies with the requirement. Beside the code
+and discussion, in the margin, is a note, ``GEN000590.'' Where
+requirements are not applicable, the margin note looks like: ``N/A:
+GEN000590.'' Where compliance is automated, the margin note looks like:
+``auto: GEN000590.'' Where compliance is merely documented, the margin
+note merely says, ``GEN000590.'' And where we are not yet compliant, the
+margin note is red.
+
+Section numbers are denoted with \S.
+
+
+\section{Navigational aids}
+
+Links between parts of this document abound; if you are viewing it as a
+PDF file, you can click on any section number you see in the text to visit
+that section. Your PDF reader may have a list of bookmarks in a sidebar,
+by which you can easily skip around the document.  Even if it doesn't, you
+should find the entire table of contents to be clickable. You may also
+find the numerous indices, with their clickable page numbers, to be a
+useful resource.
+
+
+\section{Colophon}
+\label{Colophon}
+
+This document was automatically constructed on the date shown on the title
+page, from the complete set of Puppet policy files (the \emph{manifest},
+in Puppet parlance), which contain the policy as enforced on that date.
+The motivating values behind this are that accuracy, completeness and
+currency are more important than readability, editability, and
+approachability.
+
+Put another way, if this were a Word document written by hand, anybody
+would know how to open it and edit it. But such a document would likely
+not be up-to-date, because, while updating the policy would fix immediate
+user problems, updating the Word document would only have vague future
+benefits. That task could be easily skipped entirely in the near term, or
+administrators might easily jot down changes without supplying enough
+context or detail for their writings to be useful six months down the
+road. As it is, when administrators edit this policy, the source of the
+documentation is in the same file, on the same screenful of letters. If
+an administrator updates part of the policy, and the comment right above
+it becomes wrong, the juxtaposition makes that fact obvious, and more
+likely to be rectified. The administrator is also more likely to write the
+documentation in the first place, because no additional files or programs
+must be opened in order to begin writing it.
+
+See~\S\ref{Maintenance} for more information about how to generate this
+finished document from its pieces, and how to manage and document changes
+you make to the policy herein.

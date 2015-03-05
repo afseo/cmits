@@ -1,0 +1,418 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Maintenance}
+\label{Maintenance}
+
+This chapter discusses how to maintain this policy, both as a set of
+rules for computers to follow and as a document for humans to
+read. We'll talk about how to build your own copy of this document; a
+general approach to using policy-based tools to maintain a set of
+systems; details you need to keep in mind as you maintain the policy
+and this document; and what you would want to keep in mind if you were
+to make CMITS over from scratch.
+
+
+
+\section{How to build a copy of this document}
+\label{generating}
+
+First, obtain a copy of the document's sources. The \CMITSPolicy\ is
+frequently stored and tracked in a Subversion repository. We'll say, for
+example, that everything is under
+\url{https://example.com/svn/trunk/myorg-cmits}. Check out a working copy
+of the directory using your Subversion client. In your working copy
+folder, you will find {\tt modules-*} and {\tt manifests} directories,
+which contain the Puppet source code and other attendant files, and you
+should find a {\tt unified-policy-document} directory. This directory
+is where you can generate the policy document from the manifest stored in
+the {\tt modules-*} and {\tt manifests} directories and the documentation
+stored in the {\tt latex-*} directories. See the README.txt in the {\tt
+unified-policy-document} directory for how to proceed.
+
+
+
+
+\section{General process}
+
+Here, in general, is how to maintain this policy. We'll use the word
+\emph{problem} here to mean something that needs to be changed. Think of
+it like a word \emph{problem}, not like a drinking \emph{problem}.
+
+\begin{description}
+
+\item[A problem appears:]
+A new security requirement comes down, or a user can't run a program. The
+machine as configured by the policy does not do what is needed.
+
+\item[Relate the problem to configuration:]
+How does the configuration of the machine bring up the problem? Is a wrong
+directory on the path, does a package need to be installed?
+
+\item[Express the solved state:]
+With the problem solved, what's different about the system? Is there an
+extra line in a file? A certain version of a package installed? Does a
+file have different permissions? That end state is what you will express
+with Puppet, not so much the exact steps needed to get there.
+
+\item[Have a policy working copy:]
+Check out, if necessary, a copy of the policy from the Subversion server.
+
+\item[Locate the configuration and relate it to the policy:]
+Think about what subsystem needs to be configured. Each \emph{module} in
+the {\tt modules} directory deals with a subsystem, e.g. {\tt ssh}, {\tt
+nfs}. Find or create the module to which your configuration belongs. Each
+module contains \emph{manifests}, files which contain \emph{classes},
+which in turn contain enough \emph{resources} (the individual units of
+configuration) to express a single goal. For example, {\tt
+ssh::no\_tunnelling} is a class which turns off all tunnelling of network
+connections and X11 traffic through SSH sessions.
+
+\item[Change, write, or co-opt classes that change the configuration:]
+If you write classes, use other modules as examples, and Puppet
+reference documentation as a resource. When writing, keep in mind that you
+have four audiences: Puppet, which will be implementing the policy; other
+administrators, who need to read and understand the policy; your future
+self, six months down the road; and auditors. See below for more details
+about how to write for each of these audiences.
+
+The Puppet community has a set of common modules called the Puppet Forge;
+if you use one, take intellectual rights into consideration, be sure you
+know what other modules it depends on, and count on re-documenting it: the
+CMITS documentation scheme, for better and for worse, serves more purposes
+than puppetdoc does.
+
+If you change a module, be sure you know where in the policy it is used:
+you may be reconfiguring more hosts than you think.
+
+\item[Change manifests to include your classes:]
+On what nodes, or hosts, does the change need to happen? All hosts which
+are to be compliant with the requirements of a document (like a STIG)? All
+hosts in a given room? All hosts belonging to a given subgroup of the
+organization?  Find or create a suitable class in {\tt
+manifests/templates.pp}; modify {\tt manifests/nodes.pp} if necessary to
+make some hosts include your new class.
+
+\item[Test:] Use \textsf{rspec-puppet} to test everything about your
+  module that you can. Such tests can be easily automated and are
+  saved with the code. The quickest way to make sure your module does
+  what you want on your own host is to use \verb!puppet apply!
+  something like so:
+\begin{verbatim}
+sudo puppet apply <<< 'include mynewclass'
+\end{verbatim}
+  Then if it didn't work right, manually restore whatever system
+  settings were changed and try again.
+
+\item[Manage changes:]
+Use a software version control system to track changes to the policy. This
+helps answer questions of why a change was made later on, and ensures that
+your changes are properly backed up and deployed.
+
+\end{description}
+
+
+
+
+\section{Invariants}
+\label{invariants}
+
+As you maintain the policy, there are several important properties of it
+that you must maintain. 
+
+\begin{description}
+
+\item[Self-documenting:]
+Write everything you know about the aspect of the configuration that your
+policy changes. See \S\ref{class_fips} (as of revision 4597, 1 Nov 2011)
+for a good example. This property makes the policy document mean something
+to human administrators (including your future self), both during
+production and in a contingency situation. It also makes the policy
+document a central place for small but important facts about quirks of the
+subsystems being configured.
+
+\item[Discoverable:]
+Not only the policy files themselves, but also the policy document and its
+history should be easy places to search for needed knowledge. Take the
+time to write a cross-reference to another section of the policy, a
+bibliographical citation to another document containing guidance, the
+official number of a controlled requirement, a revision number in the
+admin repository when something was fixed or broken. Links like these made
+the World Wide Web the amazing resource it is.
+
+\item[Flexible:]
+To the greatest extent possible, the policy should not write over changes
+not under its control. For example, \S\ref{class_mail::stig} edits
+Postfix's configuration, rather than copying an entirely new configuration
+file over the old one. If an updated postfix package is issued because of
+a security update, and it changes the Postfix configuration slightly in an
+unrelated area, the policy that edits the file will still work against
+updated machines, while a policy that copied over the file would miss
+something.
+
+\item[Authoritative:]
+Any change that needs to be made to any system should be part of the
+policy. This property is what makes contingency recovery using this policy
+so easy, and what makes this policy document as complete as it is.
+
+\item[Managed:]
+Every change you make should be checked into the version control
+repository, under your name. This eases compliance with audit-related
+regulations, and plays into the automated policy updating and backup
+that's part of the policy (\S\ref{module_backup}).
+
+\item[Convergent:]
+The thing that lifts Puppet above shell scripting is that when you use its
+elements to write your policy, you gain the guarantee that a managed host
+will always move toward conformance with the policy. If you write a shell
+script, you have to make sure it's \emph{idempotent} (running it multiple
+times has the same effect as running it once), and that it deals with all
+possible errors and unexpected inputs.
+
+\end{description}
+
+
+
+
+
+
+
+\section{How to write this document}
+\label{writing}
+
+Any line in a {\tt *.pp} file which starts with a pound sign (\#) will be
+fed to {\LaTeX} when the documentation is built. This is by means of {\tt
+shaney}, which strips the comment characters off, and surrounds uncommented
+Puppet policy code with verbatim tags so that it will be typeset as code,
+and so that {\LaTeX} will not search it for markup tags. The outputs of
+shaney for each file are concatenated in a certain order.
+
+{\tt shaney} also constructs the
+\S\ref{iac-compliance-summary}~(\nameref{iac-compliance-summary}) chapter.
+
+Here's what this means for you, the documentation writer:
+
+\begin{itemize}
+
+\item If you put an underscore (\_) in a comment, put a backslash
+(\textbackslash) before it so that {\LaTeX} will not barf.
+
+\item Comments with whitespace before the \# character are typeset as
+  code; comments starting on the first column are treated as
+  discussion. If you comment something out, kindly put spaces before
+  the \# characters, so that your commented-out policy won't be
+  treated as text. By the same token, if you write a comment about
+  some nicety of Puppet syntax you used, and not about what the policy
+  is, you may want to indent it.
+
+\item In any module, the \verb!init.pp! comes first, then other
+\verb!*.pp! files in the same directory in alphabetical order, then
+\verb!*.pp! files in subdirectories in alphabetical order. So you should
+start the \verb!init.pp! with {\tt \# \textbackslash
+section\{\emph{Subsystem name}\}}; start other \verb!*.pp! files with a
+subsection directive, and \verb!*.pp! files in subdirectories with a
+subsubsection directive, so that the structure of the finished document
+mirrors the directory structure of the module.
+
+\item If you write \verb!\S\ref{class_other::class}! in the comments
+  of your file, readers of the raw text of the file will know to look
+  at \verb!modules/other/manifests/class.pp!; when the document is
+  typeset, the reference will turn into a hyperlink to the section
+  number where the class is written.
+
+\item When you write an implements tag
+  \verb!\implements{iacontrol}{FOO-1,BAR-1}!, all lines from that line
+  to the next paragraph break or to the next piece of Puppet code will
+  go into the \nameref{iac-compliance-summary} chapter. So aim that
+  first paragraph toward auditors: use language familiar to them by
+  quoting the requirement; don't go into detail about the policy, or
+  things you found out while configuring the system properly; and
+  don't say anything funny or offer personal opinions. Write details
+  and opinions in ensuing paragraphs.
+
+\item There's a {\LaTeX} cheat sheet at
+\url{http://www.stdout.org/~winston/latex/}.
+
+\item \index{g}{SELinux} Changes to SELinux are usually deployed in
+\emph{policy packages}, which are files whose names end with \verb!.pp!.
+If you store any of those files within this policy, you must make sure
+that the name of the file inside the policy ends not just with \verb!.pp!
+but with \verb!.selinux.pp!. That way, the scripts that build the unified
+policy document will know that such files do not contain Puppet code and
+\LaTeX\ comments, but SELinux policy.
+
+\item Write only plain text in section or chapter names: no markup,
+  such as \verb!\emph! or \verb!\tt!. Normally \LaTeX\ supports this,
+  but the hack which automatically writes names of pertinent IA
+  controls after section names in the table of contents is brittle,
+  and causes \LaTeX\ to fail when you do this.
+
+\end{itemize}
+
+
+
+
+\section{How it all works}
+\label{workings}
+
+The building of this document is done by \verb!sourapples!, which is a
+part of \verb!shaney!. \verb!sourapples! first generates all the generated
+parts of the document, then calls \LaTeX , \verb!makeindex!, and other
+utilities, to typeset the document.
+
+
+\subsection{Written \LaTeX\ parts}
+
+The main document is \verb!main.tex!. This sets the title of the document,
+pulls in the \LaTeX\ packages used, and includes each chapter of the
+document in order.
+
+Prose chapters and document parts are included from the \verb!latex-fouo!
+(if it exists) and \verb!latex-unclass! directories.
+
+Some chapters are not written, but generated from many smaller files.
+These are the generated parts.
+
+\subsection{Generated parts}
+\label{workings:generated}
+
+The Puppet policy is stored in the \verb!*.pp! files in the
+\verb!manifests!, \verb!modules-unclass! and perhaps \verb!modules-fouo!
+directories. Shaney finds them all, removes comment characters and
+surrounds Puppet code with verbatim tags, resulting in the {\tt
+policy.tex} file. During this process it generates the index directives
+that result in the indices of classes, defined resource types, and files.
+It also pulls out per-IA-control excerpts using the \verb!\implements!
+tags. The documentation in the Puppet code is pulled together into the
+``Policy'' chapter; the excerpts comprise the ``Compliance by IA control''
+chapter.
+
+The attendant files are in the \verb!modules-*/*/files! directories.
+\verb!sourapples! gathers them and converts the ones which seem to be made
+of readable text into a form suitable for inclusion into the policy
+document. The result of this is the ``Attendant files'' chapter.
+
+
+
+\section{Document requirements}
+
+If you were to transition this document to another document preparation
+system, you would need to re-engineer it from its requirements, and so you
+would need to know those requirements.
+
+Guiding principles for the policy are outlined in~\S\ref{invariants}.
+Guiding principles for this document are given in the Colophon
+(\S\ref{Colophon}).
+
+Sources of requirements for this document:
+
+\begin{itemize}
+\item We are administering computers every day with the contents of
+  this document, and functional requirements on their configuration
+  change every day. To successfully document this, our documentation
+  must be primarily organized in the same way our problems and
+  configuration changes are.
+\item We are submitting this document to other organizations to back
+  up our claims of compliance with several \emph{requiring documents}
+  (for example, the UNIX SRG). Those other organizations don't have
+  time to read our whole document.
+\item In case of contingency we may need to read directly how systems
+  should be configured, rather than delegating the task of configuring
+  them to a tool.
+\item Several \emph{requiring documents} (for example, the UNIX SRG)
+  place \emph{named requirements} on the configuration of our
+  computers or our procedures. We need to know what our expected
+  compliance posture is, \emph{i.e.}, the set of named requirements
+  met when the policy is applied, plus the set of reasons why unmet
+  requirements are unmet. The \emph{requiring documents} may change a
+  few times per year; corresponding changes to our policy may be
+  needed.
+\item We are making a document inside the DoD.
+\end{itemize}
+
+Requirements:
+
+\begin{enumerate}
+\item The parts of the document containing the policy must be
+programmatically constructed from comments written in the policy.
+
+\item Other parts containing prose (such as the part you are reading right
+now) must also be integrated into the document.
+
+\item Supporting files, such as configuration files copied into place by
+the policy, should also be included in the document.
+
+\item It must be easy to notate our posture as regards \emph{named
+requirements}, such as IA controls and requirements from multiple
+STIGs---both in comments in policy files and in prose sections. The
+postures regarding compliance at the time of this writing are:
+    \begin{itemize}
+    \item this piece of the policy automates compliance
+    \item we are not yet compliant
+    \item compliance comes through the action of some people, like
+    administrators, or users
+    \item the default configuration of an operating system or piece of
+    software we use is compliant
+    \item the requirement is not applicable
+    \item the requirement is to document something, and here is the
+    documentation of that thing
+    \end{itemize}
+
+\item It must be easy to see whether a piece of the document has to do
+with a named requirement, which one, and what the posture is. For example,
+a compliance notation could result in a margin note in the document, which
+is red if we are not compliant.
+
+\item It must be easy to find all parts of the document relating to a
+given requirement, and what posture they put us in. For example, each
+compliance notation could result in an entry in a per-requiring-document
+index, notating that the requirement is ``automated,'' or ``N/A.''
+
+\item It should be easy to find all parts of the policy relating to a
+given file, class or defined resource type.
+
+\item Where one part of the policy refers to another (\emph{e.g.}, a class
+includes another class) there should be a quick way to get to the
+corresponding part of the document, like a clickable link.
+
+\item There must be a way to get quickly to a given section of the
+document, for example a table of contents, or if the output file is a PDF,
+PDF bookmarks pointing to each section.
+
+\item Along with the name of each section in the table of contents, there
+should be a list of the IA controls dealt with in that section.
+
+\item A summary of compliance broken out by requiring document, in CSV
+(Comma-Separated Value) format or a similarly easy-to-parse format, must
+be derived from the compliance notations---including short prose reasons
+for non-compliance. (CSV may not be appropriate for the prose.)
+
+\item There must be a chapter which summarizes compliance with IA
+controls, sorted by IA control. It must be programmatically generated. It
+should provide a quick way to get to the detailed parts of the document
+relating to each IA control.
+
+\item A given compliance posture notated with regard to a STIG
+requirement, where the STIG details IA controls related to each STIG
+requirement, must be programmatically interpreted as the same posture with
+regard to the corresponding IA controls, and summarized in the
+per-IA-control chapter as such.
+
+\item Security labels must be written at the top of every page.
+
+\item The title page must contain a security label, the title, the date,
+the organizational logo, a distribution statement and a destruction
+notice.
+
+\end{enumerate}
+
+

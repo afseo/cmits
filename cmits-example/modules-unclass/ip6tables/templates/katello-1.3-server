@@ -1,0 +1,23 @@
+<% # variables needed:
+   #     site: a CIDR block expressing the LAN this host will be on.
+-%>
+<%=scope.function_template "ip6tables/pieces/preamble"-%>
+<%=scope.function_template "ip6tables/pieces/connected"-%>
+<%=scope.function_template "ip6tables/pieces/loopback"-%>
+<%=scope.function_template "ip6tables/pieces/dhcp-client"-%>
+<%=scope.function_template "ip6tables/pieces/input-icmp"-%>
+<%=scope.function_template "ip6tables/pieces/output-icmp"-%>
+<%=scope.function_template "ip6tables/pieces/dns"-%>
+<%=scope.function_template "ip6tables/pieces/puppet-client"-%>
+<%=scope.function_template "searde/ip6tables/pieces/satellite-client"-%>
+<%=scope.function_template "ip6tables/pieces/ssh-server"-%>
+<%=scope.function_template "ip6tables/pieces/ssh-client"-%>
+
+<%=scope.function_template "ip6tables/pieces/katello-qpid"-%>
+
+<%=scope.function_template "ip6tables/pieces/source-routed"-%>
+<%=scope.function_template "ip6tables/pieces/mdns"-%>
+
+<%=scope.function_template "ip6tables/pieces/fallthrough"-%>
+
+COMMIT

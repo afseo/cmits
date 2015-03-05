@@ -1,0 +1,82 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\documentclass[12pt]{extarticle}
+\usepackage[margin=1in]{geometry}
+\usepackage{verbatim}
+
+\newcommand{\ditto}{''}
+
+\begin{document}
+{\scriptsize
+{\tt Auditable \verb!sudo! svnversion \input{svnversion.txt}}\\
+\begin{minipage}{\textwidth}
+\vskip 0.7ex
+\begin{verbatim}
+$URL: https://afseo.eglin.af.mil/svn/admin/trunk/cmits-pieces/modules-unclass/sudo/sudo-boldface.tex $
+$Date: 2014-04-02 09:13:18 -0500 (Wed, 02 Apr 2014) $
+$Rev: 7217 $
+\end{verbatim}
+\end{minipage}
+}
+\section*{{\huge \#} Auditable {\tt sudo}: a summary}
+
+\subsection{Editing files}
+
+\begin{tabular}{ll}
+\emph{To edit} & \emph{Run this command} \\
+\hline
+/etc/passwd & \texttt{sudo vipw} \\
+/etc/group & \texttt{sudo vigr} \\
+/etc/shadow & \texttt{sudo vipw -s} \\
+/etc/gshadow & \texttt{sudo vigr -s} \\
+/etc/sudoers.d/* & \texttt{sudo visudo -f /etc/sudoers.d/\emph{file}} \\
+Anything else & \texttt{sudoedit \emph{file}} \\
+\end{tabular}
+
+\subsection{Running commands}
+
+\begin{tabular}{p{2.5in}p{2.8in}}
+\emph{You can't} & \emph{But you can} \\
+\hline
+run a shell (\verb!sudo -s!, \verb!sudo bash!) & see what you've done
+(\texttt{sudo grep sudo /var/log/messages}) \\
+\texttt{sudo cd \emph{/some/root/only/dir}} & \texttt{sudo find
+\emph{/some/root/only/dir}} \\
+run shell scripts & (exceptions apply, see full rules) \\
+run binaries not in system dirs & \ditto \\
+run things that execute other things & \ditto \\
+\end{tabular}
+
+\subsection{Hand-jamming it}
+
+\begin{enumerate}
+% You want your hand-jammed file to be read AFTER the auditable policy.
+\item \texttt{sudo visudo -f /etc/sudoers.d/zzz\emph{myusername}}
+\item add a line that says \texttt{\emph{myusername} ALL=(ALL) ALL}
+\item write and quit
+\item do the thing you were trying to do using \verb!sudo!
+\item \underline{\texttt{sudo rm /etc/sudoers.d/zzz\emph{myusername}} when done}
+\item think about whether and how what you were doing should be
+  permanently allowed, and change the rules accordingly (see the CMITS
+  policy chapter on Maintenance).
+\end{enumerate}
+
+\section*{{\huge $\Rightarrow$} Full rules}
+
+Form: first, terms are defined; rules using the terms follow. So start
+reading at the bottom. See \verb!sudoers(5)!.
+
+\newpage
+\verbatiminput{templates/auditable.erb}
+\end{document}
+

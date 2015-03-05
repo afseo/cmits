@@ -1,0 +1,9 @@
+<% ['noexec', 'exec', 'setenv_noexec', 'setenv_exec'].each do |t|
+   items = []
+   items += (@data[t] || []).sort.uniq
+   items += (@data['DISALLOW_'+t] || []).sort.uniq.map {|x| '!'+x}
+   if items.any?
+%>
+Cmnd_Alias AUDITABLE_<%=t.upcase%> = \
+    <%=items.join(", \\\n    ")%>
+<% end; end %>

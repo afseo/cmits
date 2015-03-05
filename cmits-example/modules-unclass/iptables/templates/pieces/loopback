@@ -1,0 +1,3 @@
+-A INPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT
+-A OUTPUT -s 127.0.0.1 -d 127.0.0.1 -j ACCEPT
+

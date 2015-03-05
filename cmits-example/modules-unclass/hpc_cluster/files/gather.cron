@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# gather all non-system users and write in /srv/passwd/passwd
+getent passwd | (IFS='
+'; while read line; do
+    uid=$(echo "$line" | cut -d: -f3)
+    if [ $uid -gt 1000 -a $uid -ne 65534 ]; then
+        echo $line;
+    fi; done) > /srv/passwd/passwd.new
+mv /srv/passwd/passwd.new /srv/passwd/passwd
+
+# same with groups
+getent group | (IFS='
+'; while read line; do
+    gid=$(echo "$line" | cut -d: -f3)
+    if [ $gid -gt 1000 -a $gid -ne 65534 ]; then
+        echo $line
+    fi; done) > /srv/passwd/group.new
+mv /srv/passwd/group.new /srv/passwd/group

@@ -1,0 +1,6 @@
+[allow disk actions for group]
+Identity=unix-group:<%= group %>
+Action=org.freedesktop.udisks.filesystem-mount;org.freedesktop.udisks.drive-eject;org.freedesktop.udisks.drive-detach
+ResultAny=yes
+ResultActive=yes
+ResultInactive=auth_admin

@@ -1,0 +1,6 @@
+# Allow DHCP requests to go out, responses in.
+# We have no way of knowing, from the client, what exact DHCP server will
+# respond.
+# RFC 3315 covers DHCPv6.
+-A OUTPUT -s fe80::/16 -d ff02::1:2 -p udp -m udp --sport dhcpv6-client --dport dhcpv6-server -j ACCEPT 
+-A INPUT -s <%=site-%> -d fe80::/16 -p udp -m udp --sport dhcpv6-server --dport dhcpv6-client -j ACCEPT 

@@ -1,0 +1,62 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Contingency}
+\label{Contingency}
+
+\section{Contingency procedures}
+
+A contingency has happened; one or more workstations or servers
+must be reconstituted. You have these options:
+
+\begin{itemize}
+
+\item If you're building up one host in a temporary situation, it may be
+simplest to go through this policy, manually implementing its requirements
+on the machine in question. If you're not in the usual production setting
+(e.g., filers are missing, networking to another building is out), you may
+not want to follow the policy exactly, and when manually rebuilding, you
+don't have to.
+
+\item If you're setting up more than one host, or running for a while,
+it's probably easier to set up a \emph{puppetmaster} and maybe a kickstart
+server; this way, the hosts will implement the policy themselves, which is
+faster and less error-prone.
+
+\end{itemize}
+
+We'll discuss the first alternative here; the second is the same as normal
+production usage, which is detailed in~\S\ref{Production}
+and~\S\ref{Procedures}.
+
+If you'll be reading through this policy and manually applying it to a
+machine, you'll need to know the syntax and semantics of the policy. In
+general, refer to \cite{pro-puppet-book} and
+\cite{puppet-generated-references}. A few salient specifics follow.
+
+Start with {\tt nodes.pp} (\S\ref{manifests/nodes.pp}). Find the node
+declaration for the host you are concerned with. Follow references from
+there to high-level classes in {\tt templates.pp}
+(\S\ref{manifests/templates.pp}), thence to the modules, where you will
+find the details of how the host is configured. Some pieces of the policy
+act based on \emph{facts} about the host, like \verb!$::hostname! or
+\verb!$::kernelrelease!. You'll have to deduce the values of these facts
+yourself and act accordingly.
+
+Whichever way you choose, you must still personally follow the procedures
+in \S\ref{Procedures}.
+
+\section{ Contingency preparedness }
+
+Some parts of this policy detail the ways that hosts under this
+\CMITSPolicy\ should prepare for contingency situations:
+\S\ref{module_contingency_backup}, \S\ref{module_log}.

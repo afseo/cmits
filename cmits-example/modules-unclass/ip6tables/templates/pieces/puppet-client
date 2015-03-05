@@ -1,0 +1,5 @@
+# Puppet client. We should nail down better exactly which host it's talking to
+# - but that would require each firewall rule to be a resource, an approach we
+# rejected. (Then the Puppet host could export a resource allowing clients to
+# connect to it.)
+-A OUTPUT -d <%=site-%> -p tcp --dport 8140 -j ACCEPT

@@ -1,0 +1,35 @@
+# reject junk
+-A INPUT -j JUNK
+# packets we never care about
+# Apple Remote Desktop
+-A JUNK -p udp -m udp --dport 3283 -j DROP
+# Building 350 windows hosts
+-A JUNK -d <%=broadcast-%> -p udp -m udp --sport 137 --dport 137 -j DROP 
+-A JUNK -d 255.255.255.255 -p udp -m udp --sport 1036 -j DROP 
+-A JUNK -d <%=broadcast-%> -p udp -m udp --dport 1947 -j DROP
+-A JUNK -d <%=broadcast-%> -p udp -m udp --dport 8083 -j DROP
+# Broadcast NTP
+-A JUNK -d 255.255.255.255 -p udp -m udp --dport 123 -j DROP 
+-A JUNK -d <%=broadcast-%> -p udp -m udp --dport 123 -j DROP 
+-A JUNK -p udp -m udp --sport 1038 -j DROP 
+-A JUNK -p udp -m udp --dport 8421 -j DROP 
+# Windows chatter
+-A JUNK -p udp -m udp --dport 137 -j DROP 
+-A JUNK -p udp -m udp --dport 138 -j DROP 
+-A JUNK -p udp -m udp --dport 139 -j DROP 
+-A JUNK -p udp -m udp --dport 631 -j DROP 
+-A JUNK -p udp -m udp --dport 177 -j DROP 
+# Mac chatter
+-A JUNK -p udp -m udp -d 255.255.255.255 --dport 111 -j DROP
+# Multicast
+-A JUNK -s <%=gateway-%> -d 224.0.0.1 -j DROP 
+# Multicast DNS (Avahi, Zeroconf)
+-A JUNK -d 224.0.0.251 -p udp -m udp --dport 5353 -j DROP
+-A JUNK -d <%=broadcast-%> -p udp -m udp --dport 5353 -j DROP
+# Broadcast highports
+-A JUNK -d 255.255.255.255 -p udp -m udp --dport 1024:65535 -j DROP 
+# Likely wake-on-lan packets. If we're awake enough to receive packets and
+# filter them, we don't need to hear about them. They'll get as far as the
+# Ethernet adapter anyway, whether we drop them here or not.
+-A JUNK -d 255.255.255.255 -p udp -m udp --dport 9 -j DROP
+-A JUNK -j RETURN

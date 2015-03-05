@@ -1,0 +1,115 @@
+#!/bin/bash
+#
+# Automatically back up the policy onto optical media, so that everything
+# necessary to implement this policy will be ready to hand in case of any
+# contingency.
+#
+# Do the backup every month. Be willing to try several times. Any qualified
+# host can do a backup, and if one goes down, another should in fact do it. If
+# one host successfully completes a backup, all hosts should stop trying until
+# next month. (The multiple tries are the reason why this script is run daily,
+# even though the backup is a monthly product.)
+#
+# We use stamp files on an NFS-mounted filesystem to broadcast the fact of a
+# successful backup. If the host doing the backup automounts, the check for the
+# stamp file could cause the filesystem to be mounted, and if the host is not
+# properly on the network, that could hang. But this is a cron job; it has all
+# day.
+STAMP_DIR=<%= stamp_directory %>
+
+#
+# These days we're making a DVD, and piping the iso straight to the drive
+# rather than making it ahead. So we should only need 5GB. This figure is in
+# KiB:
+SPACE_NEEDED=5000000
+
+set -e
+
+# If there has already been a successful backup this month, go no further. The
+# existence of this month's stamp file will let us know a successful backup
+# has happened already.
+
+stamp_file=$(/bin/date +'%Y-%m-backed-up')
+if [ -f "$STAMP_DIR/$stamp_file" ]; then
+    exit 0
+fi
+
+# Try backups only when the day number is in the twenties. Exit otherwise.
+
+if [[ $(date +%d) != 2? ]]; then
+    exit 0
+fi
+
+# Keep a copy of the policy - including the backup scripts - checked out in
+# root's home. Routinely destroy local modifications to this working copy in
+# order to make sure that what we have is exactly what is in the repository.
+# The variable wc should not have any spaces in it: if it did, one inadequately
+# quoted name in any level of scripts or utilities under this one could cause
+# the whole backup operation to fail.
+#
+# Make sure there's enough room too.
+
+ao=critical-backup--AUTOMATICALLY-OVERWRITTEN
+wc_has_enough=0
+for wc in /tmp/$ao /var/tmp/$ao; do
+    rm -rf $wc
+    mkdir -p $wc
+    # Filesystem 1K-blocks Used Available Use% Mounted-on
+    # But if the device (Filesystem) is long, the line will be split, so count
+    # from the right instead.
+    free=$(df -k $wc | tail -n 1 | awk '{print $(NF-2)}')
+    if [ $free -ge $SPACE_NEEDED ]; then
+        wc_has_enough=1
+        break
+    fi
+done
+if [ $wc_has_enough = 0 ]; then
+    echo "Could not find a temp dir with enough space! Aborting." >&2
+    exit 42
+fi
+
+
+# HOME=/root: if root has cached authentication credentials, use them to talk
+# to the Subversion server.
+
+/usr/bin/env HOME=/root \
+    /usr/bin/svn --non-interactive --username $(hostname -s) \
+    co -q <%= contingency_backup_url -%> \
+    "$wc"
+
+chmod -R go-rwx "$wc"
+chown -R nobody "$wc"
+
+
+# Get the reStructuredText utilities onto the path: they are needed to build
+# the SBU manual. HOME=/root: as above.
+
+cd $wc
+
+<%
+if @add_to_path
+    to_add_to_path = if @add_to_path.is_a?(Array); @add_to_path; else [@add_to_path]; end
+    path_addition = '\:' + to_add_to_path.join('\:')
+else
+    path_addition = ''
+end
+if @add_to_pythonpath
+    to_add_to_pythonpath = if @add_to_pythonpath.is_a?(Array); @add_to_pythonpath; else [@add_to_pythonpath]; end
+    pythonpath = to_add_to_pythonpath.join('\:')
+else
+    pythonpath = ''
+end
+%>
+# run the documentation builds as nobody to lower our security profile
+runuser -s /bin/bash nobody -c "/usr/bin/env \
+     PATH=/bin\:/sbin\:/usr/bin\:/usr/sbin<%= path_addition -%> \
+     PYTHONPATH=<%= pythonpath -%> \
+     make"
+
+# burn has to run as root, for access to the optical disc writer device
+/usr/bin/env HOME=/root \
+     PATH=/bin\:/sbin\:/usr/bin\:/usr/sbin \
+     make burn
+
+
+touch $stamp_dir/$stamp_file

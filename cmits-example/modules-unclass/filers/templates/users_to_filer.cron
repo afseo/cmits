@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Try not to run this at the same time as other hosts.
+sleep $(( $RANDOM % 60 ))
+
+FILER_ETC=<%=etc_dir%>
+
+# To avoid race conditions if multiple hosts try to run this at the
+# same time:
+SUFFIX=$(hostname -s).$$.$(date +%s)
+
+set -e
+
+
+
+# gather all system users from filer and write in new passwd file
+cat $FILER_ETC/passwd | (IFS='
+'; while read line; do
+    uid=$(echo "$line" | cut -d: -f3)
+    if [ $uid -le 1000 -o $uid -eq 65533 \
+         -o $uid -eq 65534 -o $uid -eq 65535 ]; then
+        echo $line;
+    fi; done) > $FILER_ETC/passwd.new.$SUFFIX
+
+# now gather all non-system users from my passwd database, and add
+# them to the system users
+getent passwd | (IFS='
+'; while read line; do
+    uid=$(echo "$line" | cut -d: -f3)
+    if [ $uid -gt 1000 -a $uid -ne 65533 \
+         -a $uid -ne 65534 -a $uid -ne 65535 ]; then
+        echo $line;
+    fi; done) >> $FILER_ETC/passwd.new.$SUFFIX
+
+
+# same with system groups
+cat $FILER_ETC/group | (IFS='
+'; while read line; do
+    gid=$(echo "$line" | cut -d: -f3)
+    if [ $gid -le 1000 -o $gid -eq 65533 \
+        -o $gid -eq 65534 -o $gid -eq 65535 ]; then
+        echo $line
+    fi; done) > $FILER_ETC/group.new.$SUFFIX
+
+
+# same with non-system groups
+getent group | (IFS='
+'; while read line; do
+    gid=$(echo "$line" | cut -d: -f3)
+    if [ $gid -gt 1000 -a $gid -ne 65533 \
+        -a $gid -ne 65534 -a $gid -ne 65535 ]; then
+        echo $line
+    fi; done) >> $FILER_ETC/group.new.$SUFFIX
+
+maybe_backup_then_replace () {
+    local new="$1"
+    local orig="$2"
+    if [ "$(cat $orig | sha256sum)" != "$(cat $new | sha256sum)" ]; then
+	cp $orig $orig.backup.$(date +'%Y_%m_%d_%H_%M_%S').$SUFFIX
+	mv $new $orig
+    else
+        rm $new
+    fi
+}
+maybe_backup_then_replace $FILER_ETC/passwd.new.$SUFFIX $FILER_ETC/passwd
+maybe_backup_then_replace $FILER_ETC/group.new.$SUFFIX  $FILER_ETC/group

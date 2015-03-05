@@ -1,0 +1,43 @@
+module puppetmaster 1.0.6;
+
+require {
+	type httpd_t;
+        type puppetmaster_t;
+        type passwd_exec_t;
+        type sysfs_t;
+	type puppet_var_lib_t;
+
+	type pcscd_t;
+	type rhnsd_t;
+	type hald_t;
+	type puppet_t;
+	type insmod_t;
+	type postgresql_t;
+	type system_dbusd_t;
+	type cupsd_t;
+        type ntpd_t;
+
+        class file { getattr execute append relabelfrom relabelto create write unlink setattr rename };
+	class dir { write read create add_name search remove_name getattr rmdir };
+}
+
+allow puppetmaster_t passwd_exec_t:file { getattr execute };
+allow puppetmaster_t sysfs_t:dir search;
+
+# allow Puppet master to write report files (overly broad:
+# puppet_var_lib_t covers much more than report files)
+allow httpd_t puppet_var_lib_t:dir { write read create add_name remove_name rmdir };
+allow httpd_t puppet_var_lib_t:file { relabelfrom relabelto create write append unlink setattr rename };
+
+# Puppet master tries to get info about other processes from httpd_t;
+# it may be attempting to enforce policy or something. This spams the
+# log. Avoid spam:
+dontaudit httpd_t cupsd_t:dir getattr;
+dontaudit httpd_t hald_t:dir getattr;
+dontaudit httpd_t insmod_t:dir getattr;
+dontaudit httpd_t pcscd_t:dir getattr;
+dontaudit httpd_t postgresql_t:dir getattr;
+dontaudit httpd_t puppet_t:dir getattr;
+dontaudit httpd_t rhnsd_t:dir getattr;
+dontaudit httpd_t system_dbusd_t:dir getattr;
+dontaudit httpd_t ntpd_t:dir getattr;

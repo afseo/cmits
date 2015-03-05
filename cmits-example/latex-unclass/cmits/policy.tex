@@ -1,0 +1,31 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+\chapter{Policy}
+\label{Policy}
+Here follows the policy itself, broken into sections by module, and
+subsections by class.
+\implements{iacontrol}{DCCS-1}%
+As required, DoD reference documents constitute the primary source for
+security configuration done by this document.
+\implements{iacontrol}{ECSC-1}\implements{databasestig}{DG0175}%
+This \CMITSPolicy\, where applied, configures the ``DBMS host platform''
+for ``compliance with applicable STIG requirements.'' It also
+``hardens'' some ``separately configured components that access the
+database including web servers, application servers, report servers,
+etc.'' See the compliance index (\S\ref{index_compliance} for overviews.
+When properly installed, this \CMITSPolicy\ also ``regularly audit[s] the
+security configuration'' of subsystems under its control ``to confirm
+continued compliance with security requirements.'' See~\S\ref{Production}
+for details of how regular policy enforcement is set up.
+
+\input{generated_policy}

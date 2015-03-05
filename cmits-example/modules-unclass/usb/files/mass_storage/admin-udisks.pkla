@@ -1,0 +1,6 @@
+[require admin authentication for disk actions]
+Identity=*
+Action=org.freedesktop.udisks.*
+ResultAny=auth_admin
+ResultActive=auth_admin
+ResultInactive=auth_admin

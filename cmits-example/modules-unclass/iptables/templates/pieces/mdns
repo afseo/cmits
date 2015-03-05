@@ -1,0 +1,9 @@
+# GEN007850: don't send dynamic DNS updates "unless needed." mDNS is not
+# strictly the same, but its purpose is also to "transmit unencrypted
+# information about a system including its name and address." As we don't
+# presently need mDNS, we can just turn it off without questioning the sanity
+# of such a dictum.
+-A OUTPUT -d 224.0.0.251 -p udp -m udp --dport 5353 -j DROP
+# Internet Group Management Protocol (IGMP, multicast)
+-A OUTPUT -d 224.0.0.22 -j DROP
+

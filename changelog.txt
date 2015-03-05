@@ -1,0 +1,37 @@
+Changes
+-------
+
+This file details major changes in the CMITS release.
+
+1.3
+---
+
+* Support for Mac OS X Mavericks.
+* Support for more complicated automount setups.
+* A thread safety bug in the graphical unified-policy-document build script
+  has been fixed.
+* Improved high-performance computing support.
+* Improvements in FIPS and auditable sudo.
+
+1.2
+---
+
+* Mostly complete Mac STIG compliance.
+* Mostly complete RHEL 5 STIG compliance.
+* Decent cross-platform support where policies are valid on multiple
+  platforms (e.g., OpenSSH, sudo).
+* Support for setting individual MCX policies on Macs.
+* Support for setting property list values on Macs.
+* rspec-puppet tests for some aspects of some modules.
+* Support for a particular way of setting up an HPC cluster.
+* Support for adding and removing printers using CUPS.
+* Support for augeas 0.9.0 (as found in RHEL6) and 1.0.0 (as built for
+  Mac OS X).
+* New sudoers rules allow for better auditability.
+
+1.1
+---
+
+* Initial Forge.mil release.
+* RHEL 6 compliance with Unix OS SRG v1r1.
+* Some preliminary efforts toward Mac STIG and RHEL 5 STIG compliance.

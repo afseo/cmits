@@ -1,0 +1,11 @@
+<%=scope.function_template(["iptables/pieces/preamble"])-%>
+<%=scope.function_template(["iptables/pieces/loopback"])-%>
+<%=scope.function_template(["iptables/pieces/connected"])-%>
+<%=scope.function_template(["iptables/pieces/ssh-server"])-%>
+<%=scope.function_template(["iptables/pieces/dns"])-%>
+<%=scope.function_template(["iptables/pieces/http-client"])-%>
+<%=scope.function_template(["iptables/pieces/https-client"])-%>
+<%=scope.function_template(["iptables/pieces/site-highports"])-%>
+<%=scope.function_template(["iptables/pieces/fallthrough"])-%>
+
+COMMIT

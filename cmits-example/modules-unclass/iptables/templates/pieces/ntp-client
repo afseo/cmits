@@ -1,0 +1,1 @@
+-A OUTPUT -m udp -p udp --dport 123 -j ACCEPT

@@ -1,0 +1,7 @@
+-A OUTPUT -m tcp -p tcp --dport 445 -j ACCEPT
+# Not sure why conntrack wasn't working for this one.
+-A INPUT -m tcp -p tcp --sport 3268 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 3268 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 389 -j ACCEPT
+-A OUTPUT -m udp -p udp --dport 389 -j ACCEPT
+<%= scope.function_template "iptables/pieces/kerberos-client"-%>

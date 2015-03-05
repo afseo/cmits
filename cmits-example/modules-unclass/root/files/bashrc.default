@@ -1,0 +1,53 @@
+# .bashrc
+
+###########################################################
+## This file is automatically overwritten by the policy. ##
+###########################################################
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# \implements{unixstig}{GEN000940,GEN000945,GEN00950}%
+# Make sure that the PATH and LD_LIBRARY_PATH are "the vendor default and
+# contain only absolute paths," and that LD_PRELOAD is empty---\emph{after} all
+# other settings have been established.
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export LD_LIBRARY_PATH=
+export LD_PRELOAD=
+
+# \implementsunixstig{GEN000960} Make sure there are no world writable
+# directories in the PATH.
+OIFS="$IFS"
+IFS=:
+insecure_path=0
+for d in $PATH; do
+    if [[ $(stat -c %a $d) = *[2367] ]]; then
+        echo "DIRECTORY $d ON PATH IS WORLD WRITABLE!!" >&2
+        insecure_path=1
+    fi
+done
+IFS="$OIFS"
+
+# If there are world-writable entries on the path, get rid of the whole path.
+# The (now-root) user can sort it out.
+if [ "$insecure_path" = 1 ]; then
+    export PATH=
+    echo "PATH VARIABLE HAS BEEN EMPTIED" >&2
+fi
+
+trap '' SIGINT
+echo
+echo "Who are you and what are you doing?"
+echo "Press Ctrl-D on an empty line when finished explaining."
+sed 's/[[:cntrl:]]/(CONTROL CHAR)/g' | \
+    logger -t "ROOT LOGIN, user said"
+echo "What you typed has been logged. Continuing."
+trap - SIGINT

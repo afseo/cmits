@@ -1,0 +1,406 @@
+#!/bin/bash
+# --- BEGIN DISCLAIMER ---
+# Those who use this do so at their own risk;
+# AFSEO does not provide maintenance nor support.
+# --- END DISCLAIMER ---
+# --- BEGIN AFSEO_DATA_RIGHTS ---
+# This is a work of the U.S. Government and is placed
+# into the public domain in accordance with 17 USC Sec.
+# 105. Those who redistribute or derive from this work
+# are requested to include a reference to the original,
+# at <https://github.com/afseo/cmits>, for example by
+# including this notice in its entirety in derived works.
+# --- END AFSEO_DATA_RIGHTS ---
+#
+# see also
+# http://stackoverflow.com/questions/151677/tool-for-adding-license-headers-to-source-files
+
+usage () {
+    cat >&2 <<EOF
+
+Usage: $0 {apply|remove} preamble file_or_dir1 file_or_dir2...
+
+apply     Make sure the given preamble is written at the top of all given files
+          and all applicable files under given directories.
+remove    Remove the given preamble from all given files and all applicable
+          files under given directories.
+preamble  A text file. Both its name and its contents are used, like so:
+
+Example: I write a text file named /tmp/foo, containing the text "This is not a
+pipe." $0 apply /tmp/foo /tmp/file1 /tmp/file2 will prepend to both file1 and
+file2 these lines, if they are not already at the top:
+
+--- BEGIN foo ---
+This is not a pipe.
+--- END foo ---
+
+Preambles may be statements of software license, markings/labellings, etc.
+
+The lines added will be commented properly given the apparent syntax of the
+file. Syntaxes supported: Puppet with LaTeX in comments, LaTeX, BibTeX, shell
+scripts, Ruby, Python, Augeas, INI supporting # comments, make, Cheetah. Syntax
+is chosen using the filename.
+
+Subversion .svn directories and their contents are skipped.
+EOF
+}
+ 
+# Usage: comment_syntax filename
+# Figures out what sort of comment syntax to use for the named file.
+# We rely mostly on cues from the file's pathname: the extension is an obvious
+# one (e.g. *.py are usually Python files), but also the location inside our
+# particular directory structure (e.g. this is a Puppet manifest; we want to
+# leave all */files/* alone.)
+#
+# Note: the things echoed here are part of function names below.
+comment_syntax () {
+    case "$1" in
+        */auth.conf|*/fileserver.conf|*/puppet.conf)  echo hash_skip_hashbang ;;
+        */files/*                                  )  echo none ;;
+        */templates/*                              )  echo none ;;
+        */README                                   )  echo none ;;
+        */README.txt                               )  echo none ;;
+        *.selinux.pp                               )  echo none ;;
+        manifests/*.pp                             )  echo puppet_and_latex ;;
+        */manifests/*.pp                           )  echo puppet_and_latex ;;
+        # Human-written files in unified-policy-document.
+        unified-policy-document/main.tex           )  echo latex ;;
+        unified-policy-document/per-iac-special/*  )  echo latex ;;
+        */unified-policy-document/main.tex         )  echo latex ;;
+        */unified-policy-document/per-iac-special/*)  echo latex ;;
+        # Files constructed by LaTeX
+        *.ilg|*.ind|*.idx|*.aux|*.toc|*.dvi        )  echo none ;;
+        unified-policy-document/*.csv              )  echo none ;;
+        unified-policy-document/*.pdf              )  echo none ;;
+        unified-policy-document/*.out              )  echo none ;;
+        unified-policy-document/*.log              )  echo none ;;
+        */unified-policy-document/*.csv            )  echo none ;;
+        */unified-policy-document/*.pdf            )  echo none ;;
+        */unified-policy-document/*.out            )  echo none ;;
+        */unified-policy-document/*.log            )  echo none ;;
+        # Files constructed by BibTeX
+        *.blg|*.bbl                                )  echo none ;;
+        # All other *.tex in unified-policy-document are generated.
+        unified-policy-document/*.tex              )  echo none ;;
+        unified-policy-document/per-iac-output/*   )  echo none ;;
+        */unified-policy-document/*.tex            )  echo none ;;
+        */unified-policy-document/per-iac-output/* )  echo none ;;
+        latex-documentation/*.tex                  )  echo latex ;;
+        latex-documentation/*.bib                  )  echo bibtex ;;
+        */latex-documentation/*.tex                )  echo latex ;;
+        */latex-documentation/*.bib                )  echo bibtex ;;
+
+        *.tex                                      )  echo latex ;;
+        *.pp                                       )  echo puppet_and_latex ;;
+        *.rb                                       )  echo hash_skip_hashbang ;;
+        *.py                                       )  echo hash_skip_hashbang ;;
+        *.sh                                       )  echo hash_skip_hashbang ;;
+        */Makefile                                 )  echo hash_skip_hashbang ;;
+        */Vagrantfile                              )  echo hash_skip_hashbang ;;
+        *.aug                                      )  echo augeas ;;
+        # These two are used for making extensions to LaTeX. Things get
+        # complicated therein.
+        *.dtx                                      )  echo dtx ;;
+        *.ins                                      )  echo ins ;;
+        # Punt on XML for now
+        *.xml                                      )  echo none ;;
+        *.tex.tmpl                                 )  echo cheetah ;;
+
+
+        *                                          )  echo UNKNOWN ;;
+    esac
+}
+
+# Usage for make_comment_* functions: make_comment_bla foo
+# where foo is the name of a preamble. Return code is not specified.
+# Provide stuff to turn into a comment on stdin, and read the comment off of
+# stdout.
+
+make_comment_hash_skip_hashbang () {
+    sed -e 's/^/# /g' | sed 's/ $//'
+}
+
+# Usage for insert_at_top_* functions: insert_at_top_bla file_a
+# Supply lines you want at the top on stdin, not commented. stdout gets the
+# contents of the file with the lines added, commented. bla is the name of the
+# comment syntax. If you get to supply more than one filename, that's because
+# I'm lazy and sloppy, not because I said you could.
+
+insert_at_top_hash_skip_hashbang () {
+    local file="$1"
+    if cat "$file" | head -n 1 | grep '^#!' >&/dev/null; then
+        head -n 1 "$file"
+        make_comment_hash_skip_hashbang
+        tail -n +2 "$file"
+    else
+        make_comment_hash_skip_hashbang
+        cat "$file"
+    fi
+}
+
+make_comment_puppet_and_latex () {
+    sed -e 's/^/# % /g' | sed 's/ $//'
+}
+
+insert_at_top_puppet_and_latex () {
+    make_comment_puppet_and_latex
+    cat "$@"
+}
+
+# Augeas uses (* ... *) for comments. We remove '(*' and '*)' from the body so
+# the preamble text cannot cause Augeas parse errors. Since we expect the
+# preamble's text to be prose without this sort of punctuation, this ought not
+# to smash anything.
+make_comment_augeas () {
+    sed -e '1i (*
+; s/(\*//; s/\*)//; $a *)
+'
+}
+
+insert_at_top_augeas () { 
+    make_comment_augeas
+    cat "$@"
+}
+
+make_comment_cheetah () {
+    sed -e 's/^/## /g' | sed 's/ $//'
+}
+
+insert_at_top_cheetah () {
+    make_comment_cheetah
+    cat "$@"
+}
+
+make_comment_latex () {
+    sed -e 's/^/% /g' | sed 's/ $//'
+}
+
+insert_at_top_latex () {
+    make_comment_latex
+    cat "$@"
+}
+
+# In BibTeX, comments are everything but entries, and entries are located by
+# the parser using the @ symbol (every entry starts with an @). This means you
+# can't write @ in a comment. It's entirely possible that a piece of prose may
+# contain an @; but since we expect the readers to be humans, we can just
+# replace it with more text for them to read.
+make_comment_bibtex () {
+    sed -e 's/@/ [at sign] /g'
+}
+
+insert_at_top_bibtex () { 
+    make_comment_bibtex
+    cat "$@"
+}
+
+make_comment_dtx () {
+    sed -e 's/^/% /g' | sed 's/ $//'
+}
+
+# Comments in DTX files normally contain the documentation. So we have to make
+# meta-comments if we don't want the preamble to show up in the body of the
+# documentation. "\iffalse" is always false; the "meta-comment" is to let the
+# reader of the raw text know that what follows is a meta-comment. A
+# meta-meta-comment, if you will.
+insert_at_top_dtx () {
+    echo '% \iffalse meta-comment'
+    make_comment_dtx
+    echo '% \fi'
+    cat "$@"
+}
+
+# This only works for the top of the .ins file, not for its 'preamble' (LaTeX
+# terminology, not mine; this is a terminology collision), which goes into the
+# generated .sty file.
+make_comment_ins () {
+    sed -e 's/^/%% /g' | sed 's/ $//'
+}
+
+# The ins file is another curiosity. Firstly, what we call a preamble elsewhere
+# in this script, we will call 'the prose' here, because the .ins file already
+# has a thing called a 'preamble.' This preamble is commentified and added to
+# the top of the .sty file when it is created, by the docstrip LaTeX script.
+# So, we must insert the prose once commented at the top of the ins file, and
+# again a bit lower, inside the preamble, uncommented, so it will end up in the
+# constructed sty file.
+insert_at_top_ins () {
+    # We need two copies of the prose.
+    local prose=$(mktemp)
+    cat > $prose
+    # Here's the one to go at the top of the ins file:
+    make_comment_ins < $prose
+    # Now the existing top of the ins file, up to the line '\preamble':
+    sed -n -e '0,/^\\preamble$/p' "$@"
+    # Now the uncommented copy of the prose, inside the preamble:
+    cat $prose
+    # Now the rest of the .ins file, starting after the line '\preamble'.
+    # You can't say /foo/+1 in sed, so we have to start with the '\preamble'
+    # line, then cut that single line off using tail.
+    sed -n -e '/^\\preamble$/,$p' "$@" | tail -n +2
+}
+
+# For every file format where we can just add
+# --- BEGIN foo ---
+# ...
+# --- END foo ---
+# The way to remove it is just to get rid of the BEGIN, END and everything
+# between.
+_remove_preamble_usual () {
+    local preamble_name=$1
+    shift
+    sed -e "/--- BEGIN $preamble_name ---\$/,/--- END $preamble_name ---\$/d" "$@"
+}
+
+# This function deals with this condition:
+# (*
+# --- BEGIN foo ---
+# ...
+# --- END foo ---
+# *)
+#
+# You want to take out the (* *) as well as the BEGIN, END and everything
+# between.
+_remove_preamble_plus_one () {
+    local preamble_name=$1
+    local filename=$2
+    # Careful! - there could be more than one BEGIN/END pair.
+    local begin_lines=($(grep -n -- "--- BEGIN $preamble_name ---\$" \
+                         $filename | cut -d: -f1))
+    local end_lines=($(grep -n -- "--- END $preamble_name ---\$" \
+                         $filename | cut -d: -f1))
+    local i=0
+    if [ ${#begin_lines[*]} != ${#end_lines[*]} ]; then
+        echo "there are ${#begin_lines[*]} BEGIN lines," \
+             "but ${#end_lines[*]} END lines. Mismatch!" >&2
+        echo "Doing nothing to this file." >&2
+        return 1
+    fi
+    sed_command=""
+    for (( i=0; $i < ${#begin_lines[*]}; i++ )); do
+        local delete_start=$(( ${begin_lines[$i]} - 1 ))
+        local delete_end=$(( ${end_lines[$i]} + 1 ))
+        sed_command="$sed_command ${delete_start},${delete_end}d;"
+    done
+    sed -e "$sed_command" "$filename"
+}
+
+# Usage: remove_preamble preamblename filename
+remove_preamble () {
+    local preamble_name="$1"
+    local filename="$2"
+    local function_to_use
+    case "$(comment_syntax $filename)" in
+        dtx|augeas)
+            function_to_use=_remove_preamble_plus_one ;;
+        *)
+            function_to_use=_remove_preamble_usual ;;
+    esac
+    $function_to_use "$@"
+}
+
+# Usage: bracket_preamble preamble_name
+# stdin is the prose of the preamble; stdout is the same, but with "--- BEGIN"
+# and "--- END" sort of lines.
+bracket_preamble () {
+    local $preamble_name="$1"
+    echo "--- BEGIN $preamble_name ---"
+    cat
+    echo "--- END $preamble_name ---"
+}
+
+# Usage: if all_have_preamble name_of_preamble file_a file_b; then (...); fi
+# We're going to assume here that if a file contains --- BEGIN foo --- at the
+# top, it in fact contains the proper full text of the foo preamble.
+# (If you give multiple filenames, smart guy, the return value is only true if
+# all of the files contain --- BEGIN foo ---.)
+all_have_preamble () {
+    local name="$1"
+    shift
+    # grep(1) says, "Normally, exit status is 0 if selected lines are found and
+    # 1 otherwise."
+    #
+    # Experimentally I've determined that grep --files-without-match returns 1
+    # when none of the given files contain the pattern, and 0 otherwise.
+    #
+    # We're talking about GNU grep, which is in at least RHEL and MacOS X.
+    grep --files-without-match -- "--- BEGIN $name ---" "$@" >&/dev/null
+}
+
+if [ $# -lt 3 ]; then
+    usage
+    exit 1
+fi
+
+if [ $1 = -h ]; then
+    usage
+    exit 0
+fi
+
+if [ $1 = --help ]; then
+    usage
+    exit 0
+fi
+
+action="$1"
+case "$action" in
+    apply|remove) ;;
+    *) 
+        echo unknown action "$action"
+        usage
+        exit 1
+        ;;
+esac
+
+preamble="$2"
+preamble_name=$(basename "$preamble")
+if ! [ -f "$preamble" ]; then
+    usage
+    exit 1
+fi
+
+shift
+shift
+
+# Try to deal with files having spaces in their names.
+IFS='
+'
+
+# If things go south, don't overwrite things with empty files, die first.
+set -e
+
+find "$@" -name .svn -prune -o -type f -print | while read filename; do
+    synt=$(comment_syntax "$filename")
+    
+    case "$synt" in
+        none)
+            # There is no way to add nor remove the preamble from this file.
+            continue
+            ;;
+        UNKNOWN)
+            echo "Don't know how to insert comments in $filename. Skipping it." >&2
+            continue
+            ;;
+    esac
+    # Otherwise, let's dig in.
+    case "$action" in
+        apply)
+            if ! all_have_preamble "$preamble_name" "$filename"; then
+                cat "$preamble" | \
+                    bracket_preamble "$preamble_name" | \
+                    insert_at_top_$synt "$filename" > "$filename.new"
+                mv -f "$filename.new" "$filename"
+            fi
+            ;;
+        remove)
+            if all_have_preamble "$preamble_name" "$filename"; then
+                remove_preamble "$preamble_name" "$filename" > "$filename.new"
+                mv -f "$filename.new" "$filename"
+            fi
+            ;;
+    esac
+done
+
+#for i; do
+#    if [ $(comment_syntax "$i") = UNKNOWN ]; then echo $i; fi
+#done

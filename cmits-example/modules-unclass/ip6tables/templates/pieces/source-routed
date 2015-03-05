@@ -1,0 +1,14 @@
+# GEN003605, GEN003606: drop all source routed packets; input, output and
+# forwarding.
+# 
+# In IPv6 source routing is accomplished with a routing header of type 0,
+# commonly known as RH0. See http://lwn.net/Articles/232781/.
+
+-A INPUT -m rt --rt-type 0 -j DROP
+-A OUTPUT -m rt --rt-type 0 -j DROP
+-A FORWARD -m rt --rt-type 0 -j DROP
+
+# According to http://www.sixxs.net/faq/connectivity/?faq=filters, "RH0
+# processing is disabled per default since Linux 2.6.20.9," but only in an
+# INPUT sense: RH0 headers could still be forwarded, and the above rules will
+# stop that from happening.

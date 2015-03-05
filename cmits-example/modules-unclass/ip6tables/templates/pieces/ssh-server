@@ -1,0 +1,4 @@
+# Serve ssh
+-A INPUT -s <%=site-%> -p tcp -m tcp --dport ssh -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport ssh -j ACCEPT
+

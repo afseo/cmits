@@ -1,0 +1,24 @@
+This directory is a place where special per-IA-control things can be manually
+written.
+
+Normally the shaney script, which is run as part of building the unified policy
+document, finds every place where an IA control is declared to be implemented,
+and copies the following paragraph into a per-IAC file, thus automatically
+summarizing for each IA control the ways in which the control is implemented
+throughout the policy.
+
+But in some cases, the implementation of the IA control cannot be automatically
+summarized. For example, DCCS-1 requires that DoD configuration guidance
+documents form the basis for configuration. That control is implemented by the
+whole policy, not a part of it; so no part of the policy can be tagged, "Here's
+where DCCS-1 is implemented."
+
+In these cases, a summary must exist so the auditors can read it, but it needs
+to be written for the purpose, rather than summarized by automatic excerpting.
+Those summaries are written here, in this directory, as files named after IA
+controls.
+
+In each file, write only the paragraph which summarizes compliance with the
+given control; do not, for example, write a \section directive at the top of
+the file: this will be taken care of for you.
+

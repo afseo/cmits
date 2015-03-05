@@ -1,0 +1,111 @@
+% --- BEGIN DISCLAIMER ---
+% Those who use this do so at their own risk;
+% AFSEO does not provide maintenance nor support.
+% --- END DISCLAIMER ---
+% --- BEGIN AFSEO_DATA_RIGHTS ---
+% This is a work of the U.S. Government and is placed
+% into the public domain in accordance with 17 USC Sec.
+% 105. Those who redistribute or derive from this work
+% are requested to include a reference to the original,
+% at <https://github.com/afseo/cmits>, for example by
+% including this notice in its entirety in derived works.
+% --- END AFSEO_DATA_RIGHTS ---
+
+\usepackage{url}
+\usepackage{cite}
+\usepackage{verbatim}
+\usepackage{multind}
+\usepackage{color}
+
+% Leave more room in the table of contents for section numbers, because in
+% this document they get large (e.g., 12.10.151.)
+\usepackage{tocloft}
+\addtolength{\cftchapnumwidth}{0.3em}
+\addtolength{\cftsecnumwidth}{0.8em}
+\addtolength{\cftsubsecnumwidth}{1.4em}
+\addtolength{\cftsubsubsecnumwidth}{1em}
+
+% The tightverbatim environment is a verbatim environment with no
+% paragraph spacing at the top and bottom. This is useful when we're
+% popping in and out of verbatim all the time to set index entries, add
+% labels and cross-references (via faxlore), to avoid essentially
+% triple-spacing the Puppet source code.
+%
+% (The verbatim environment as written in
+% /usr/share/texmf/tex/latex/tools/verbatim.sty skips space if we're not
+% in a minipage. So this just makes us be in a minipage, so the space
+% won't be skipped.)
+
+\newenvironment{tightverbatim}%
+    {\par\minipage{0.94\textwidth}\small\verbatim}%
+    {\endverbatim\endminipage\par}
+
+% http://ask.metafilter.com/31640/Whats-the-name-of-the-asterisks-that-divide-chapters
+\newcommand{\dinkus}{%
+    \begin{center}%
+    *\hskip 3em *\hskip 3em *%
+    \end{center}}
+
+% Make PDF magic happen.
+% Thanks, Patrick Joeckel:
+% http://www.mpch-mainz.mpg.de/~joeckel/pdflatex/
+% Note that I expect always to use pdflatex, not latex+dvipdf
+\usepackage[pdftex,bookmarks=true,pdfpagelabels=true]{hyperref}
+\makeatletter
+\hypersetup{
+    bookmarksnumbered=true,
+    bookmarksopen=false,
+    breaklinks=true,
+    plainpages=false,
+    colorlinks=false,
+    linkbordercolor={0.7 0.7 1.0},
+    pdftitle={\@title},
+    pdfauthor={\@author}
+}
+\makeatother
+
+\usepackage{iadoc}
+% must be used after hyperref - see source
+\usepackage{iacic}
+\def\iamarginsize{\scriptsize}
+
+\makeindex{g}
+\makeindex{class}
+\makeindex{define}
+
+
+% Make marginpars show up on the correct side of the page.
+\usepackage{mparhack}
+
+% Make the Bibliography a numbered chapter. In 1998, someone said you do
+% this by redefining the \thebibliography environment, at
+% http://groups.google.com/group/comp.text.tex/browse_thread/thread/b6e93d2f5e3a121a?hl=en
+% This redefinition is based on the definition in
+% /usr/share/texmf/tex/latex/base/book.cls from the
+% tetex-latex-3.0-33.13.el5 package.
+
+\makeatletter
+\renewenvironment{thebibliography}[1]
+     {\chapter{\bibname}% <<< star removed from this line
+      \label{Bibliography}% <<< this line added
+      \@mkboth{\MakeUppercase\bibname}{\MakeUppercase\bibname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+
+
+

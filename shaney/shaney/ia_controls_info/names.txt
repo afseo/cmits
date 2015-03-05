@@ -1,0 +1,157 @@
+COAS-1:Alternate Site Designation
+COAS-2:Alternate Site Designation
+COBR-1:Protection of Backup and Restoration Assets
+CODB-1:Data Backup Procedures
+CODB-2:Data Backup Procedures
+CODB-3:Data Backup Procedures
+CODP-1:Disaster and Recovery Planning
+CODP-2:Disaster and Recovery Planning
+CODP-3:Disaster and Recovery Planning
+COEB-1:Enclave Boundary Defense
+COEB-2:Enclave Boundary Defense
+COED-1:Scheduled Exercises and Drills
+COED-2:Scheduled Exercises and Drills
+COEF-1:Identification of Essential Functions
+COEF-2:Identification of Essential Functions
+COMS-1:Maintenance Support
+COMS-2:Maintenance Support
+COPS-1:Power Supply
+COPS-2:Power Supply
+COPS-3:Power Supply
+COSP-1:Spares and Parts
+COSP-2:Spares and Parts
+COSW-1:Backup Copies of Critical Software
+COTR-1:Trusted Recovery
+DCAR-1:Procedural Review
+DCAS-1:Acquisition Standards
+DCBP-1:Best Security Practices
+DCCB-1:Control Board
+DCCB-2:Control  Board
+DCCS-1:Configuration Specifications
+DCCS-2:Configuration Specifications
+DCCT-1:Compliance Testing
+DCDS-1:Dedicated IA Services
+DCFA-1:Functional Architecture for AIS Applications
+DCHW-1:Hardware Baseline
+DCID-1:Interconnection Documentation
+DCII-1:IA Impact Assessment
+DCIT-1:IA for IT Services
+DCMC-1:Mobile Code
+DCNR-1:Non-repudiation
+DCPA-1:Partitioning the Application
+DCPB-1:IA Program and Budget
+DCPD-1:Public Domain Software Controls
+DCPP-1:Ports, Protocols, and Services
+DCPR-1:CM Process
+DCSD-1:IA Documentation
+DCSL-1:System Library Management Controls
+DCSP-1:Security Support Structure Partitioning
+DCSQ-1:Software Quality
+DCSR-1:Specified Robustness---Basic
+DCSR-2:Specified Robustness---Medium
+DCSR-3:Specified Robustness---High
+DCSS-1:System State Changes
+DCSS-2:System State Changes
+DCSW-1:Software Baseline
+EBBD-1:Boundary Defense
+EBBD-2:Boundary Defense
+EBBD-3:Boundary Defense
+EBCR-1:Connection Rules
+EBPW-1:Public WAN Connection
+EBRP-1:Remote Access for Privileged Functions
+EBRU-1:Remote Access for User Functions
+EBVC-1:VPN Controls
+ECAD-1:Affiliation Display
+ECAN-1:Access for Need-to-Know
+ECAR-1:Audit Record Content---Public Systems
+ECAR-2:Audit Record Content---Sensitive Systems
+ECAR-3:Audit Record Content---Classified Systems - Audit of Security Label Changes
+ECAT-1:Audit Trail, Monitoring, Analysis and Reporting
+ECAT-2:Audit Trail, Monitoring, Analysis and Reporting
+ECCD-1:Changes to Data
+ECCD-2:Changes to Data
+ECCM-1:COMSEC
+ECCR-1:Encryption for Confidentiality (Data at Rest)
+ECCR-2:Encryption for Confidentiality (Data at Rest)
+ECCR-3:Encryption for Confidentiality (Data at Rest)
+ECCT-1:Encryption for Confidentiality (Data at Transmit)
+ECCT-2:Encryption for Confidentiality (Data at Transmit)
+ECDC-1:Data Change Controls
+ECIC-1:Interconnections among DoD Systems and Enclaves
+ECID-1:Host Based IDS
+ECIM-1:Instant Messaging
+ECLC-1:Audit Record Content---Classified Systems---Audit of Security Label Changes
+ECLO-1:Logon
+ECLO-2:Logon
+ECLP-1:Least Privilege
+ECML-1:Marking and Labeling
+ECMT-1:Conformance Monitoring and Testing
+ECMT-2:Conformance Monitoring and Testing
+ECND-1:Network Device Controls
+ECND-2:Network Device Controls
+ECNK-1:Encryption for Need-To-Know
+ECNK-2:Encryption for Need-To-Know
+ECPA-1:Privileged Account Control
+ECPC-1:Production Code Change Controls
+ECPC-2:Production Code Change Controls
+ECRC-1:Resource Control
+ECRG-1:Audit Reduction and Report Generation
+ECRR-1:Audit Record Retention
+ECSC-1:Security Configuration Compliance
+ECSD-1:Software Development Change Controls
+ECSD-2:Software Development Change Controls
+ECTB-1:Audit Trail Backup
+ECTC-1:Tempest Controls
+ECTM-1:Transmission Integrity Controls
+ECTM-2:Transmission Integrity Controls
+ECTP-1:Audit Trail Protection
+ECVI-1:Voice-over-IP (VoIP) Protection
+ECVP-1:Virus Protection
+ECWM-1:Warning Message
+ECWN-1:Wireless Computing and Network
+IAAC-1:Account Control
+IAGA-1:Group Authentication
+IAIA-1:Individual Identification and Authentication
+IAIA-2:Individual Identification and Authentication
+IAKM-1:Key Management
+IAKM-2:Key Management
+IAKM-3:Key Management
+IATS-1:Token and Certificate Standards
+IATS-2:Token and Certificate Standards
+PECF-1:Access to Computing Facilities
+PECF-2:Access to Computing Facilities
+PECS-1:Clearing and Sanitizing
+PECS-2:Clearing and Sanitizing
+PEDD-1:Destruction
+PEDI-1:Data Interception
+PEEL-1:Emergency Lighting
+PEEL-2:Emergency Lighting
+PEFD-1:Fire Detection
+PEFD-2:Fire Detection
+PEFI-1:Fire Inspection
+PEFS-1:Fire Suppression
+PEFS-2:Fire Suppression
+PEHC-1:Humidity Controls
+PEHC-2:Humidity Controls
+PEMS-1:Master Power Switch
+PEPF-1:Physical Protection of Facilities
+PEPF-2:Physical Protection of Facilities
+PEPS-1:Physical Security Testing
+PESL-1:Screen Lock
+PESP-1:Workplace Security Procedures
+PESS-1:Storage
+PETC-1:Temperature Controls
+PETC-2:Temperature Controls
+PETN-1:Environmental Control Training
+PEVC-1:Visitor Control to Computing Facilities
+PEVR-1:Voltage Regulators
+PRAS-1:Access to Information
+PRAS-2:Access to Information
+PRMP-1:Maintenance Personnel
+PRMP-2:Maintenance Personnel
+PRNK-1:Access to Need-to-Know Information
+PRRB-1:Security Rules of Behavior or Acceptable Use Policy
+PRTN-1:Information Assurance Training
+VIIR-1:Incident Response Planning
+VIIR-2:Incident Response Planning
+VIVM-1:Vulnerability Management

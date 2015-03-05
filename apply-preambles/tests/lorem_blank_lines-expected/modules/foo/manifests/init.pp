@@ -1,0 +1,17 @@
+# % --- BEGIN LOREM_BLANK_LINES ---
+# % Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+# % incididunt ut labore et dolore magna aliqua.
+# %
+# % Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+# % incididunt ut labore et dolore magna aliqua.
+# %
+# % Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+# % incididunt ut labore et dolore magna aliqua.
+# % --- END LOREM_BLANK_LINES ---
+# \section{foo}
+#
+# Configure the foo.
+
+class foo {
+    bla
+}

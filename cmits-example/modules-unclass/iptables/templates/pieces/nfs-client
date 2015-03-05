@@ -1,0 +1,8 @@
+-A OUTPUT -m udp -p udp --dport 2049 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 2049 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 635 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 637 -j ACCEPT
+-A OUTPUT -m udp -p udp --dport 111 -j ACCEPT
+-A OUTPUT -m tcp -p tcp --dport 111 -j ACCEPT
+-A INPUT -m udp -p udp --dport 111 -j ACCEPT
+-A INPUT -m tcp -p tcp --dport 111 -j ACCEPT
